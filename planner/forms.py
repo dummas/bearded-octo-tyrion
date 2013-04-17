@@ -23,30 +23,30 @@ class SinginForm(forms.Form):
         self._errors[NON_FIELD_ERRORS].append(message)
 
 
+class ClientForm(forms.Form):
+    """
+    Client add form
+    """
+    first_name = forms.CharField(
+        max_length=200
+    )
+    last_name = forms.CharField(
+        max_length=200
+    )
+    telephone = forms.CharField(
+        max_length=200
+    )
+
+
 class DoctorForm(forms.Form):
     """
     Entering new doctor form
     """
-    name = forms.CharField(
-        max_length=200)
-    username = forms.CharField(
-        max_length=200,
-        required=True)
-    password = forms.CharField(
-        max_length=200,
-        widget=forms.PasswordInput)
-
-    def save(self):
-        """
-        Saving the doctor
-
-        Must include the management of user
-        """
-        # data = self.cleaned_data
+    pass
 
 
-class DoctorsWorking(forms.Form):
+class DoctorWorkingForm(forms.Form):
     """
     Entering new doctors appointment
     """
-    # doctor = forms
+    pass

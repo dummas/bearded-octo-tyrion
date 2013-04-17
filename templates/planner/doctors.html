@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block secondary_menu %}
+<form class="navbar-search pull-right">
+  <input type="text" class="search-query" placeholder="Doctor search">
+</form>
+{% endblock %}
+
+{% block content %}
+<div class="btn-group">
+    <a class="btn">Add</a>
+    <a class="btn disabled">Edit</a>
+    <a class="btn disabled">Disable</a>
+</div>
+<div class="doctors"></div>
+{% endblock %}

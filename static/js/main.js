@@ -31,4 +31,8 @@ $(document).ready(function() {
         editable: true
     });
 
+    // Type ahead
+    // $('.typeahead-client').typeahead()
+    $('#ClientAdd').modal({'show': false})
+
 });

@@ -6,6 +6,7 @@
         <meta name="author" content="">
         <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="/static/css/bootstrap-responsive.min.css">
+        <link rel="stylesheet" type="text/css" href="/static/css/bootstrap-modal.css">
         <link rel="stylesheet" type="text/css" href="/static/css/fullcalendar.css">
         <!-- <link rel="stylesheet" type="text/css" href="/static/css/fullcalendar.print.css"> -->
         <link rel="stylesheet" type="text/css" href="/static/css/bootstrap-fullcalendar.css">
@@ -14,23 +15,45 @@
         
         <div class="container">
 
-            <div class="navbar">
-                <div class="navbar-inner">
-                    <div class="container">
-                        <a class="brand" href="#">Brokenwing</a>
+            <div class="masthead">
+                <h3 class="muted">Brokenwing</h3>
+                <div class="navbar">
+                    <div class="navbar-inner">
+                        <div class="container">
+                            <ul class="nav">
+                                <li {% if active == "visits" %}class="active"{% endif %}>
+                                    <a href="/">Visits</a>
+                                </li>
+                                <li {% if active == "clients" %}class="active"{% endif %}>
+                                    <a href="/clients/">Clients</a>
+                                </li>
+                                <li {% if active == "doctors" %}class="active"{% endif %}>
+                                    <a href="/doctors/">Doctors</a>
+                                </li>
+                                <li {% if active == "problems" %}class="active"{% endif %}>
+                                    <a href="/problems/">Problems</a>
+                                </li>
+                            </ul>
+                            <ul class="nav pull-right">
+                                <li><a href="/accounts/logout/">Logout</a></li>
+                            </ul>
+                            {% block secondary_menu %}{% endblock %}
+                        </div>
                     </div>
-                </div>
+                </div><!-- /.navbar -->
             </div>
             
             {% block content %}{% endblock %}
             <hr>
             <footer>
-                <p>&copy; NORK 2013</p>
+                <p>&copy; NORK {% now "Y" %}</p>
             </footer>
         </div>
     </body>
     <script type="text/javascript" src="/static/js/jquery.min.js"></script>
     <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap-modal.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap-modalmanager.js"></script>
     <script type="text/javascript" src="/static/js/jquery-ui-1.10.2.custom.min.js"></script>
     <script type="text/javascript" src="/static/js/fullcalendar.js"></script>
     <script type="text/javascript" src="/static/js/main.js"></script>

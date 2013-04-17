@@ -8,6 +8,9 @@ admin.autodiscover()
 urlpatterns = patterns(
     '',
     url(r'^$', 'planner.views.index'),
+    url(r'^clients/$', 'planner.views.clients'),
+    url(r'^doctors/$', 'planner.views.doctors'),
+    url(r'^problems/$', 'planner.views.problems'),
     url(r'^accounts/login/$', 'accounts.views.account_login'),
     url(r'^accounts/logout/$', 'accounts.views.account_logout'),
     # url(r'^brokenwing/', include('brokenwing.foo.urls')),
