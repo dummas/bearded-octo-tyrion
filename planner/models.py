@@ -1,9 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.conf import settings  # Settings
 from django.contrib.auth.management import create_superuser  # Superuser manager
 from django.db.models import signals  # Signal handling
 from django.contrib.auth import models as auth_models    # Authentication
+from django.contrib.auth.models import User
 # from django.contrib.auth.models import Group, Permission
 # from django.contrib.contenttypes.models import ContentType
 
@@ -12,15 +12,6 @@ signals.post_syncdb.disconnect(
     sender=auth_models,
     dispatch_uid='django.contrib.auth.management.create_superuser'
 )
-
-
-class DoctorWorking(models.Model):
-    """
-    The working doctors administration
-    """
-    doctor = models.ForeignKey(User)  # Think about this place
-    from_date = models.DateTimeField()
-    to_date = models.DateTimeField()
 
 
 class Color(models.Model):
@@ -54,6 +45,14 @@ class Client(models.Model):
     telephone = models.CharField(max_length=200)
 
 
+class Pets(models.Model):
+    """
+    The Pets
+    """
+    client = models.ForeignKey(Client)
+    name = models.CharField(max_length=200)
+
+
 class Visit(models.Model):
     """
     The meetings
@@ -63,6 +62,9 @@ class Visit(models.Model):
     pet_name = models.CharField(max_length=200)
     problem = models.ForeignKey(Problem)
     description = models.TextField()
+    client = models.ForeignKey(Client)
+    appointment_to = models.ForeignKey(User, related_name='doctors')
+    appointment_by = models.ForeignKey(User, related_name='registers')
 
 
 def create_testuser(app, created_models, verbosity, **kwargs):

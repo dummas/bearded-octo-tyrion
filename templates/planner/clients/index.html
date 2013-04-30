@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block secondary_menu %}
+<form class="navbar-search pull-right">
+  <input type="text" class="search-query typeahead-client" data-provide="typeahead" autocomplete="off" placeholder="Client search">
+</form>
+{% endblock %}
+
+{% block content %}
+
+{% comment %}
+<p>Start of buttons</p>
+{% endcomment %}
+
+<div class="btn-group">
+    <a role="button" href="#client-add-modal" data-toggle="modal" class="btn">Add2</button>
+    <a role="button" href="#client-edit-modal" data-toggle="modal" class="btn disabled">Edit</a>
+    <a role="button" href="#client-disable-modal" data-toggle="modal" class="btn disabled">Disable</a>
+</div>
+
+{% comment %}
+<p>Start of list</p>
+{% endcomment %}
+
+{% for client in clients %}
+{client.first_name}
+{% endfor %}
+
+{% comment %}
+<p>Start of add modal</p>
+{% endcomment %}
+<div id="client-add-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="AddClient" aria-hidden="true">
+    <form id="client-add-form" method="POST" action="/clients/rest/">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="AddClient">Client Add</h3>
+        </div>
+        <div class="modal-body">
+            {% load bootstrap %}
+            {{ client_form|bootstrap }}
+        </div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <button id="client-add-form-submit" class="btn btn-primary">Save changes</button>
+        </div>
+    </form>
+</div>
+{% comment %}
+<p>Start of edit modal</p>
+{% endcomment %}
+<div id="client-edit-modal" class="modal hide fade" tabindex="-1" role="dialog" arial-labelledby="EditClient" aria-hidden="true">
+    <form id="client-edit-form" method="PUT" action="/clients/rest/">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="AddClient">Client Add</h3>
+        </div>
+        <div class="modal-body">
+            {% load bootstrap %}
+            {{ client_form|bootstrap }}
+        </div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <button id="client-edit-form-submit" class="btn btn-primary">Save changes</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
