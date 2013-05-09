@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<form action="/problems/edit/{{ problem_edit_id }}/" method="POST">{% csrf_token %}
+    {% load bootstrap %}
+    {{ problem_form|bootstrap }}
+    <button id="problem-edit-form-submit" class="btn btn-primary">Save changes</button>
+</form>
+
+{% endblock %}

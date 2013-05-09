@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="span5 text-center client-edit-form">
+        <form action="/clients/edit/{{ client_edit_id }}/" method="POST">{% csrf_token %}
+            <fieldset>
+                <legend>Client Edit</legend>
+            {% load bootstrap %}
+            {{ client_form|bootstrap }}
+            <div class="form-actions">
+                <button id="client-edit-form-cancel" href="/clients/" class="btn">Close</button>
+                <button id="client-edit-form-submit" class="btn btn-primary">Save changes</button>
+            </div>
+            </fieldset>
+        </form>
+    </div>
+    <div class="span7">
+        <h3>Pets</h3>
+        <table class="table table-striped table-hover">
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>&nbsp;</th>
+            </tr>
+            {% for pet in pets %}
+            <tr>
+                <td>{{pet.id}}</td>
+                <td>{{pet.name}}</td>
+                <td class="row-options">
+                    <a role="button" class="btn btn-mini btn-wider" href="{{ pet.edit_url }}">
+                        <i class="icon-edit"></i>
+                    </a>
+                    <a role="button" class="btn btn-mini btn-wider btn-warning" href="{{ pet.delete_url }}">
+                        <i class="icon-remove-sign"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <h3>Visits</h3>
+        <table class="table table-striped table-hover">
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>&nbsp;</th>
+            </tr>
+            {% for visit in visits %}
+            <tr>
+                <td>{{visit.id}}</td>
+                <td>{{visit.name}}</td>
+                <td class="row-options">
+                    <a role="button" class="btn btn-mini btn-wider" href="{{ visit.edit_url }}">
+                        <i class="icon-edit"></i>
+                    </a>
+                    <a role="button" class="btn btn-mini btn-wider btn-warning" href="{{ visit.delete_url }}">
+                        <i class="icon-remove-sign"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+{% endblock %}

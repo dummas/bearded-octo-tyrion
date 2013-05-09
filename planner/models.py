@@ -1,11 +1,11 @@
 from django.db import models
-from django.conf import settings  # Settings
 from django.contrib.auth.management import create_superuser  # Superuser manager
 from django.db.models import signals  # Signal handling
 from django.contrib.auth import models as auth_models    # Authentication
 from django.contrib.auth.models import User
-# from django.contrib.auth.models import Group, Permission
-# from django.contrib.contenttypes.models import ContentType
+from accounts.models import Profile
+from datetime import datetime
+from django.utils import timezone
 
 signals.post_syncdb.disconnect(
     create_superuser,
@@ -14,14 +14,39 @@ signals.post_syncdb.disconnect(
 )
 
 
-class Color(models.Model):
+class ScheduleManager(models.Manager):
     """
-    The colors management
+    Custom Schedule manager
     """
-    color_code = models.CharField(max_length=12)
+    def works_today(self):
+        """
+        Method returns all the doctors, which works today
+        """
+        schedule = Schedule.objects.filter(
+            start__lte=timezone.now(),
+            end__gte=timezone.now()
+        ).values('profile__user__username', 'start', 'end')
+
+        return schedule
+
+
+class Schedule(models.Model):
+    """
+    Schedule of the doctor personal
+
+    Manage the working hours of every doctor:
+    * user -- doctor
+    * start -- start datetime
+    * end -- end datetime
+    """
+    profile = models.ForeignKey(Profile)
+    start = models.DateTimeField()
+    end = models.DateTimeField()
+
+    objects = ScheduleManager()
 
     def __unicode__(self):
-        return str(self.color_code)
+        return str(self.profile)
 
 
 class Problem(models.Model):
@@ -30,7 +55,13 @@ class Problem(models.Model):
     """
     name = models.CharField(max_length=200)
     code = models.CharField(max_length=200)
-    color = models.ForeignKey(Color)
+    color = models.CharField(max_length=200)
+
+    def edit_url(self):
+        return "/problems/edit/" + str(self.id)
+
+    def delete_url(self):
+        return "/problems/remove/" + str(self.id)
 
     def __unicode__(self):
         return str(self.code)
@@ -44,13 +75,31 @@ class Client(models.Model):
     last_name = models.CharField(max_length=200)
     telephone = models.CharField(max_length=200)
 
+    def __unicode__(self):
+        return self.first_name + " " + self.last_name
 
-class Pets(models.Model):
+    def edit_url(self):
+        return '/clients/edit/' + str(self.id)
+
+    def delete_url(self):
+        return '/clients/remove/' + str(self.id)
+
+
+class Pet(models.Model):
     """
     The Pets
     """
     client = models.ForeignKey(Client)
     name = models.CharField(max_length=200)
+
+    def __unicode__(self):
+        return self.name
+
+    def edit_url(self):
+        return "/pets/edit/" + str(self.id)
+
+    def delete_url(self):
+        return "/pets/remove/" + str(self.id)
 
 
 class Visit(models.Model):
@@ -59,10 +108,10 @@ class Visit(models.Model):
     """
     from_date = models.DateTimeField()
     to_date = models.DateTimeField()
-    pet_name = models.CharField(max_length=200)
     problem = models.ForeignKey(Problem)
     description = models.TextField()
     client = models.ForeignKey(Client)
+    pet = models.ForeignKey(Pet)
     appointment_to = models.ForeignKey(User, related_name='doctors')
     appointment_by = models.ForeignKey(User, related_name='registers')
 
@@ -71,8 +120,6 @@ def create_testuser(app, created_models, verbosity, **kwargs):
     """
     Create fast user automatically
     """
-    if not settings.DEBUG:
-        return
     try:
         auth_models.User.objects.get(username='mamunt')
     except auth_models.User.DoesNotExist:

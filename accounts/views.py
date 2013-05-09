@@ -4,6 +4,7 @@ from django.contrib.auth import logout
 from planner.forms import SinginForm
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.shortcuts import redirect
 
 
 def account_login(request):
@@ -40,3 +41,4 @@ def account_login(request):
 
 def account_logout(request):
     logout(request)
+    return redirect('/')

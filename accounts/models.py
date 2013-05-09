@@ -7,7 +7,16 @@ class Profile(models.Model):
     user = models.OneToOneField(User)
 
     def __unicode__(self):
-        return str(self.user)
+        return str(self.user.username)
+
+    def get_username(self):
+        return str(self.user.username)
+
+    def edit_url(self):
+        return "/accounts/edit/" + str(self.id)
+
+    def remove_url(self):
+        return "/accounts/remove/" + str(self.id)
 
 
 def create_user_profile(

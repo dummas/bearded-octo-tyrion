@@ -1,5 +1,31 @@
 {% extends "base.html" %}
 
+{% load slice_time %}
+
 {% block content %}
-<div id="calendar"></div>
+
+    <p>{% now "SHORT_DATETIME_FORMAT" %}</p>
+    <p>{{ current_time }}</p>
+
+    <table class="table">
+        <tr>
+            <th>Hours</th>
+            {% for doctor in works_today %}
+            <th>{{doctor.title}}</th>
+            {% endfor %}
+        </tr>
+        {% for i in 48|slice_time %}
+        <tr>
+            <td>{{i|date:"H:i"}}</td>
+            {% for doctor in works_today %}
+                {% if doctor.start|date:"H:i" <= i|date:"H:i" and doctor.end|date:"H:i" >= i|date:"H:i" %}
+                <td>OK</td>
+                {% else %}
+                <td>{{ doctor.start|date:"H:i" }} -- {{ doctor.end|date:"H:i" }} -- {{ i|date:"H:i" }}</td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+
 {% endblock %}

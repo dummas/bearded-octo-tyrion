@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<form action="/pets/edit/{{ pet_edit_id }}/" method="POST">{% csrf_token %}
+    {% load bootstrap %}
+    {{ pet_form|bootstrap }}
+    <button id="pet-edit-form-submit" class="btn btn-primary">Save changes</button>
+</form>
+
+{% endblock %}
