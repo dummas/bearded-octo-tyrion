@@ -4,28 +4,56 @@
 
 {% block content %}
 
-    <p>{% now "SHORT_DATETIME_FORMAT" %}</p>
-    <p>{{ current_time }}</p>
-
-    <table class="table">
-        <tr>
-            <th>Hours</th>
-            {% for doctor in works_today %}
-            <th>{{doctor.title}}</th>
+    <div class="hidden" id="current-system-date">{% now "m/d/Y" %}</div>
+    <table class="table table-bordered table-hover table-visit" id="table-visit">
+        <thead>
+            <tr>
+                <th width="5%">Hours</th>
+                {% for doctor in works_today %}
+                <th>{{doctor.profile__user__username}}</th>
+                {% endfor %}
+            </tr>
+        </thread>
+        <tbody>
+            {% for time1, time2 in sliced_time %}
+            <tr>
+                <td>{{time1|date:"H:i"}}</td>
+                {% for doctor in works_today %}
+                    {% if doctor.start|date:"H:i" <= time1|date:"H:i" and doctor.end|date:"H:i" > time1|date:"H:i" %}
+                    <td class="success" 
+                        data-profile="{{ doctor.profile_id }}"
+                        data-time="{{ time1|date:'Y-m-d H:i' }}"
+                        data-time-next="{{ time2|date:'Y-m-d H:i' }}"
+                        >
+                        <a href="#visit-add-modal" data-toggle="modal">&nbsp;</a>
+                    </td>
+                    {% else %}
+                    <td class="pending"></td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
             {% endfor %}
-        </tr>
-        {% for i in 48|slice_time %}
-        <tr>
-            <td>{{i|date:"H:i"}}</td>
-            {% for doctor in works_today %}
-                {% if doctor.start|date:"H:i" <= i|date:"H:i" and doctor.end|date:"H:i" >= i|date:"H:i" %}
-                <td>OK</td>
-                {% else %}
-                <td>{{ doctor.start|date:"H:i" }} -- {{ doctor.end|date:"H:i" }} -- {{ i|date:"H:i" }}</td>
-                {% endif %}
-            {% endfor %}
-        </tr>
-        {% endfor %}
+        </tbody>
     </table>
+
+    {% comment %}
+    <p>Start of add modal</p>
+    {% endcomment %}
+    <div id="visit-add-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="AddVisit" aria-hidden="true">
+        <form id="visit-add-form" method="POST" action="/api/visits/">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="AddVisit">Visit Add</h3>
+            </div>
+            <div class="modal-body">
+                {% load bootstrap %}
+                {{ visit_form|bootstrap }}
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                <button id="visit-add-form-submit" class="btn btn-primary">Save changes</button>
+            </div>
+        </form>
+    </div>
 
 {% endblock %}

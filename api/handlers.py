@@ -111,8 +111,11 @@ class PetHandler(BaseHandler):
 class VisitHandler(BaseHandler):
     model = Visit
 
-    def read(self, request):
-        return Visit.objects.all()
+    def read(self, request, timestamp=None):
+        if timestamp:
+            return Visit.objects.on_that_day(timestamp)
+        else:
+            return Visit.objects.all()
 
     def create(self, request):
         if request.content_type:
@@ -126,8 +129,8 @@ class VisitHandler(BaseHandler):
                 description=data['description'],
                 client=Client.objects.get(id=data['client']),
                 pet=Pet.objects.get(id=data['pet']),
-                appointed_to=User.objects.get(username=data['appointed_to']),
-                appointed_by=User.objects.get(username=data['appointed_by'])
+                appointment_to=User.objects.get(id=data['appointment_to']),
+                appointment_by=User.objects.get(id=data['appointment_by'])
             )
             visit.save()
             return rc.CREATED
@@ -151,10 +154,10 @@ class VisitHandler(BaseHandler):
             visit.description = data['description']
             visit.client = Client.objects.get(id=data['client'])
             visit.pet = Pet.objects.get(id=data['pet'])
-            visit.appointed_to = User.objects.get(
-                username=data['appointed_by'])
-            visit.appointed_by = User.objects.get(
-                username=data['appointed_to'])
+            visit.appointment_to = User.objects.get(
+                id=data['appointment_to'])
+            visit.appointment_by = User.objects.get(
+                id=data['appointment_by'])
 
             visit.save()
 

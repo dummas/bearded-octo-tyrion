@@ -11,6 +11,7 @@ from planner.forms import ClientForm
 from planner.forms import PetForm
 from planner.forms import ProblemForm
 from planner.forms import VisitForm
+from planner.utils import sliced_time
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
@@ -23,13 +24,18 @@ def index(request):
     works_today = Schedule.objects.works_today()
     current_time = timezone.now()
     all_works = Schedule.objects.all()
+    visit_form = VisitForm()
+    sliced_time_current = sliced_time()
+    sliced_time_shifted = sliced_time(shift=True)
 
     return render(request, "planner/index.html", {
         'title': 'Home',
         'active': 'overview',
         'works_today': works_today,
         'all_works': all_works,
-        'current_time': current_time
+        'current_time': current_time,
+        'visit_form': visit_form,
+        'sliced_time': zip(sliced_time_current, sliced_time_shifted),
     })
 
 

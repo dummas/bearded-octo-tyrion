@@ -4,8 +4,9 @@ from django.db.models import signals  # Signal handling
 from django.contrib.auth import models as auth_models    # Authentication
 from django.contrib.auth.models import User
 from accounts.models import Profile
-from datetime import datetime
+from datetime import timedelta
 from django.utils import timezone
+from datetime import datetime
 
 signals.post_syncdb.disconnect(
     create_superuser,
@@ -22,10 +23,29 @@ class ScheduleManager(models.Manager):
         """
         Method returns all the doctors, which works today
         """
+        today_midnight = timezone.now()
+        tomorow_midnight = timezone.now()
+        today_midnight = today_midnight.replace(
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0
+        )
+        tomorow_midnight = tomorow_midnight.replace(
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0)
+        tomorow_midnight = tomorow_midnight + timedelta(days=1)
         schedule = Schedule.objects.filter(
-            start__lte=timezone.now(),
-            end__gte=timezone.now()
-        ).values('profile__user__username', 'start', 'end')
+            start__gte=today_midnight,
+            start__lte=tomorow_midnight
+        ).values(
+            'profile__user__username',
+            'profile_id',
+            'start',
+            'end'
+        )
 
         return schedule
 
@@ -102,6 +122,45 @@ class Pet(models.Model):
         return "/pets/remove/" + str(self.id)
 
 
+class VisitManager(models.Manager):
+    """
+    Visits manager
+    """
+    def on_that_day(self, timestamp):
+        """
+        Method returns all the data, which is on that date, ignoring all the
+        hours and minutes
+        """
+        timestamp = int(timestamp)
+        datetime_around = datetime.fromtimestamp(timestamp/1000.0)
+        print datetime_around
+        today_midnight = datetime_around
+        tomorow_midnight = datetime_around
+        today_midnight = today_midnight.replace(
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0
+        )
+        tomorow_midnight = tomorow_midnight.replace(
+            hour=23,
+            minute=59,
+            second=59,
+            microsecond=0)
+        visits = Visit.objects.filter(
+            from_date__gte=today_midnight,
+            from_date__lte=tomorow_midnight
+        ).values(
+            'description',
+            'appointment_to',
+            'client',
+            'from_date',
+            'to_date'
+        )
+
+        return visits
+
+
 class Visit(models.Model):
     """
     The meetings
@@ -114,6 +173,8 @@ class Visit(models.Model):
     pet = models.ForeignKey(Pet)
     appointment_to = models.ForeignKey(User, related_name='doctors')
     appointment_by = models.ForeignKey(User, related_name='registers')
+
+    objects = VisitManager()
 
 
 def create_testuser(app, created_models, verbosity, **kwargs):

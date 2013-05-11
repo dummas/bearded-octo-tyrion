@@ -1,8 +1,5 @@
-from django.template import Library
 from datetime import datetime
 from datetime import timedelta
-
-register = Library()
 
 
 def perdelta(start, end, delta):
@@ -12,16 +9,27 @@ def perdelta(start, end, delta):
         curr += delta
 
 
-@register.filter
-def slice_time(value=None):
+def sliced_time(
+    start_hour=None,
+    end_hour=None,
+    slice_hour=None,
+    shift=False
+):
     """
-    Filter -- returns a list of datetimes between fixed dates,
-    sliced by a number of slices
+    Slicing the time
+
+    Default settings:
+    * Start Hour = 8
+    * End Hour = 18
+    * Slice Hour by 40
     """
-    start_hour = 8
-    end_hour = 18
-    if value == 1:
-        value = (end_hour-start_hour)*4
+    if start_hour is None:
+        start_hour = 8
+    if end_hour is None:
+        end_hour = 18
+    if slice_hour is None:
+        slice_hour = (end_hour-start_hour)*4
+
     current_date = datetime.now()
     start_date = current_date.replace(
         hour=start_hour,
@@ -36,6 +44,9 @@ def slice_time(value=None):
         microsecond=0
     )
     difference = end_date - start_date
-    sliced_by = timedelta(seconds=difference.total_seconds()/value)
+    sliced_by = timedelta(seconds=difference.total_seconds()/slice_hour)
     end_date = end_date + sliced_by
+    if shift is True:
+        start_date = start_date + sliced_by
+        end_date = end_date + sliced_by
     return (result for result in perdelta(start_date, end_date, sliced_by))
