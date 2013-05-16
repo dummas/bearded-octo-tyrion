@@ -121,7 +121,6 @@ class VisitHandler(BaseHandler):
         if request.content_type:
             data = request.data
 
-            visit = Visit
             visit = Visit(
                 from_date=data['from_date'],
                 to_date=data['to_date'],

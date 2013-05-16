@@ -4,20 +4,22 @@
 
 {% block content %}
 
+    <div class="sticky-dock"></div>
+
     <div class="hidden" id="current-system-date">{% now "m/d/Y" %}</div>
     <table class="table table-bordered table-hover table-visit" id="table-visit">
         <thead>
             <tr>
                 <th width="5%">Hours</th>
                 {% for doctor in works_today %}
-                <th>{{doctor.profile__user__username}}</th>
+                <th id="doctor-{{doctor.profile_id}}">{{doctor.profile__user__username}}</th>
                 {% endfor %}
             </tr>
         </thread>
         <tbody>
             {% for time1, time2 in sliced_time %}
             <tr>
-                <td>{{time1|date:"H:i"}}</td>
+                <td>{% if forloop.first %}<div class="hidden" id="work-start-time">{{time1|date:"Y-m-d H:i"}}</div>{% endif %}{{time1|date:"H:i"}}</td>
                 {% for doctor in works_today %}
                     {% if doctor.start|date:"H:i" <= time1|date:"H:i" and doctor.end|date:"H:i" > time1|date:"H:i" %}
                     <td class="success" 

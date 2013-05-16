@@ -17,7 +17,7 @@ urlpatterns = patterns(
     url(r'^clients/$', clients_handler),
     url(r'^pets/$', pets_handler),
     url(r'^visits/(?P<timestamp>\d+)/$', visits_handler),
-    # url(r'^visits/$', visits_handler),
+    url(r'^visits/$', visits_handler),
     url(r'^problems/$', problems_handler),
     url(r'^schedules/$', schedules_handler)
 )

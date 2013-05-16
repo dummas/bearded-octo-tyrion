@@ -32,11 +32,10 @@ class ScheduleManager(models.Manager):
             microsecond=0
         )
         tomorow_midnight = tomorow_midnight.replace(
-            hour=0,
-            minute=0,
-            second=0,
+            hour=23,
+            minute=59,
+            second=59,
             microsecond=0)
-        tomorow_midnight = tomorow_midnight + timedelta(days=1)
         schedule = Schedule.objects.filter(
             start__gte=today_midnight,
             start__lte=tomorow_midnight
@@ -155,7 +154,8 @@ class VisitManager(models.Manager):
             'appointment_to',
             'client',
             'from_date',
-            'to_date'
+            'to_date',
+            'problem__color'
         )
 
         return visits

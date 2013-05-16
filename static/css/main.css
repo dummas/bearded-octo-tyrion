@@ -11,3 +11,38 @@ table .row-options {
     text-align: right;
     width: 80px;
 }
+
+.sticker {
+    position: absolute;
+    background: #fff;
+    padding: 5px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+.sticker:hover {
+    border: 1px solid #333;
+    padding: 4px;
+}
+
+.sticker .times {
+    display: block;
+    font-size: 10px;
+    background-color: #eee;
+    padding-left: 10px;
+    margin-bottom: 5px;
+}
+
+.sticker .description {
+    display: block;
+    clear: both;
+    background-color: #fff;
+    padding-left: 2px;
+}
+
+.current_time {
+    position: absolute;
+    background-color: #FD0006;
+    border: 0;
+    height: 1px;
+    font-size: 0;
+}
