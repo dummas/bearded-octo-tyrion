@@ -6,6 +6,40 @@ from planner.models import Pet
 from planner.models import Visit
 from planner.models import Problem
 from planner.models import Schedule
+from accounts.models import Profile
+
+
+class ProfileHandler(BaseHandler):
+    model = Profile
+
+    def read(self, request, profile_id=None):
+        if profile_id:
+            return Profile.objects.get(id=profile_id)
+        else:
+            return Profile.objects.all()
+
+    def create(self, request):
+        if request.content_type:
+            data = request.data
+            try:
+                User.objects.get(username=data['username'])
+                return rc.DUPLICATE_ENTRY
+            except User.DoesNotExist:
+                User.objects.create_user(
+                    data['username'],
+                    data['email'],
+                    data['password']
+                )
+                return rc.CREATED
+
+        else:
+            super(Profile, self).create(request)
+
+    def update(self, request):
+        return rc.NOT_IMPLEMENTER
+
+    def delete(self, request):
+        return rc.NOT_IMPLEMENTER
 
 
 class ScheduleHandler(BaseHandler):
@@ -15,7 +49,17 @@ class ScheduleHandler(BaseHandler):
         return Schedule.objects.works_today()
 
     def create(self, request):
-        return rc.NOT_IMPLEMENTER
+        if request.content_type:
+            data = request.data
+            schedule = Schedule(
+                profile=Profile.objects.get(id=data['profile']),
+                start=data['start'],
+                end=data['end']
+            )
+            schedule.save()
+            return rc.CREATED
+        else:
+            super(Schedule, self).create(request)
 
     def update(self, request):
         return rc.NOT_IMPLEMENTER
@@ -68,10 +112,19 @@ class ProblemHandler(BaseHandler):
 
 
 class PetHandler(BaseHandler):
+    """
+    Pet model handler
+    """
     model = Pet
 
-    def read(self, request):
-        return Pet.objects.all()
+    def read(self, request, client_id=None):
+        """
+        Get method returning, depending on the client_id parameter
+        """
+        if client_id:
+            return Pet.objects.filter(client__id=client_id).values('id', 'name')
+        else:
+            return Pet.objects.all()
 
     def create(self, request):
         if request.content_type:

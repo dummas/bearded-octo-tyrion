@@ -2,7 +2,7 @@
 
 {% block secondary_menu %}
 <form class="navbar-search pull-right">
-  <input type="text" class="search-query typeahead-client" data-provide="typeahead" autocomplete="off" placeholder="Doctor search">
+  <input type="text" class="search-query typeahead-doctor" data-provide="typeahead" autocomplete="off" placeholder="Doctor search">
 </form>
 {% endblock %}
 
@@ -19,8 +19,6 @@
         </div>
         <hr />
     </div>
-
-
 
     {% comment %}
     <p>Start of list</p>
@@ -52,19 +50,19 @@
         </table>
         <div class="pagination">
             <ul>
-                {% if clients.has_previous %}
+                {% if doctors.has_previous %}
                 <li>
-                    <a href="?page={{ clients.previous_page_number }}">&laquo;</a>
+                    <a href="?page={{ doctors.previous_page_number }}">&laquo;</a>
                 </li>
                 {% else %}
                 <li class="disabled">
-                    <a href="?page={{ clients.previous_page_number }}">&laquo;</a>
+                    <a href="?page={{ doctors.previous_page_number }}">&laquo;</a>
                 </li>
                 {% endif %}
                 
 
-                {% for page in clients.paginator.page_range %}
-                    {% if page == clients.number %}
+                {% for page in doctors.paginator.page_range %}
+                    {% if page == doctors.number %}
                     <li class="disabled">
                         <a href="?page={{ page }}">{{page}}</a>
                     </li>
@@ -76,13 +74,13 @@
                 {% endfor %}
 
                 
-                {% if clients.has_next %}
+                {% if doctors.has_next %}
                 <li>
-                    <a href="?page={{ clients.next_page_number }}">&raquo;</a>
+                    <a href="?page={{ doctors.next_page_number }}">&raquo;</a>
                 </li>
                 {% else %}
                 <li class="disabled">
-                    <a href="?page={{ clients.next_page_number }}">&raquo;</a>
+                    <a href="?page={{ doctors.next_page_number }}">&raquo;</a>
                 </li>
                 {% endif %}
                 
@@ -94,20 +92,14 @@
 {% comment %}
 <p>Start of add modal</p>
 {% endcomment %}
-<div id="client-add-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="AddClient" aria-hidden="true">
-    <form id="client-add-form" method="POST" action="/api/clients/">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h3 id="AddClient">Client Add</h3>
-        </div>
-        <div class="modal-body">
-            {% load bootstrap %}
-            {{ client_form|bootstrap }}
-        </div>
-        <div class="modal-footer">
-            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-            <button id="client-add-form-submit" class="btn btn-primary">Save changes</button>
-        </div>
-    </form>
+<div id="doctor-add-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="Adddoctor" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="Adddoctor">Doctor Add</h3>
+    </div>
+    <div class="modal-body">
+        {% load crispy_forms_tags %}
+        {% crispy doctor_form %}
+    </div>
 </div>
 {% endblock %}

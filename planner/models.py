@@ -176,6 +176,15 @@ class Visit(models.Model):
 
     objects = VisitManager()
 
+    def __unicode__(self):
+        return str(self.client.first_name)
+
+    def edit_url(self):
+        return '/visits/edit/' + str(self.id)
+
+    def delete_url(self):
+        return '/visits/delete/' + str(self.id)
+
 
 def create_testuser(app, created_models, verbosity, **kwargs):
     """

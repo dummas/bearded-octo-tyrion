@@ -9,18 +9,19 @@
         <link rel="stylesheet" type="text/css" href="/static/css/bootstrap-responsive.min.css">
         <link rel="stylesheet" type="text/css" href="/static/css/bootstrap-modal.css">
         <link rel="stylesheet" type="text/css" href="/static/css/bootstrap-colorpicker.css">
+        <link rel="stylesheet" type="text/css" href="/static/css/bootstrap-datetimepicker.min.css">
         <link rel="stylesheet" type="text/css" href="/static/css/bootstrap-table.css">
     </head>
     <body>
         
         <div class="container">
-
             <div class="masthead">
-                <h3 class="muted">Brokenwing</h3>
-                <div class="navbar">
+                <!-- <h3 class="muted">Brokenwing</h3> -->
+                <div class="navbar navbar-fixed-top navbar-inverse">
                     <div class="navbar-inner">
                         <div class="container">
                             <ul class="nav">
+                                {% if is_register %}
                                 <li {% if active == "overview" %}class="active"{% endif %}>
                                     <a href="/">Overview</a>
                                 </li>
@@ -36,9 +37,17 @@
                                 <li {% if active == "doctors" %}class="active"{% endif %}>
                                     <a href="/doctors/">Doctors</a>
                                 </li>
+                                <li {% if active == "schedules" %}class="active"{% endif %}>
+                                    <a href="/schedules/">Schedules</a>
+                                </li>
                                 <li {% if active == "problems" %}class="active"{% endif %}>
                                     <a href="/problems/">Problems</a>
                                 </li>
+                                {% else %}
+                                <li {% if active == "overview" %}class="active"{% endif %}>
+                                    <a href="/">Overview</a>
+                                </li>
+                                {% endif %}
                             </ul>
                             <ul class="nav pull-right">
                                 <li><a href="/accounts/logout/">Logout</a></li>
@@ -61,7 +70,8 @@
     <script type="text/javascript" src="/static/js/bootstrap-modal.js"></script>
     <script type="text/javascript" src="/static/js/bootstrap-modalmanager.js"></script>
     <script type="text/javascript" src="/static/js/bootstrap-colorpicker.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap-datetimepicker.min.js"></script>
     <script type="text/javascript" src="/static/js/jquery-ui-1.10.2.custom.min.js"></script>
-    <script type="text/javascript" src="/static/js/main.js"></script>
     <script type="text/javascript" src="/static/js/forms.js"></script>
+    <script type="text/javascript" src="/static/js/main.js"></script>
 </html>

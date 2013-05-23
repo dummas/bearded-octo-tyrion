@@ -43,6 +43,9 @@ table .row-options {
     position: absolute;
     background-color: #FD0006;
     border: 0;
-    height: 1px;
+    height: 2px;
     font-size: 0;
+}
+.masthead {
+    margin-bottom: 50px;
 }

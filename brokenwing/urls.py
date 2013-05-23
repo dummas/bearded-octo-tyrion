@@ -29,6 +29,11 @@ urlpatterns = patterns(
     url(r'^doctors/edit/(?P<doctor_edit_id>\d+)', 'planner.views.doctors'),
     url(r'^doctors/remove/(?P<doctor_remove_id>\d+)', 'planner.views.doctors'),
 
+    # Schedules
+    url(r'^schedules/$', 'planner.views.schedules'),
+    url(r'^schedules/edit/(?P<doctor_edit_id>\d+)', 'planner.views.schedules'),
+    url(r'^schedules/remove/(?P<doctor_remove_id>\d+)', 'planner.views.schedules'),
+
     # Problem
     url(r'^problems/$', 'planner.views.problems'),
     url(r'^problems/edit/(?P<problem_edit_id>\d+)/', 'planner.views.problems'),

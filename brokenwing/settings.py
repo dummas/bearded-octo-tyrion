@@ -129,7 +129,8 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'bootstrapform',
     'accounts',
-    'planner'
+    'planner',
+    'crispy_forms'
 )
 
 # A sample logging configuration. The only tangible logging
@@ -166,3 +167,5 @@ LOGIN_URL = '/accounts/login/'
 
 # Extending User profiler
 AUTH_PROFILE_MODULE = 'accounts.Profile'
+CRISPY_TEMPLATE_PACK = 'bootstrap'
+CRISPY_FAIL_SILENTLY = not DEBUG
