@@ -4,15 +4,15 @@
 
 <div class="hidden" id="current-view">weeks</div>
 <div class="hidden" id="current-system-date">{{ current_date|date:"m/d/Y" }}</div>
-<table class="table table-bordered table-hover table-visit" id="table-visit">
+<table class="table table-bordered table-hover table-visit table-week-view" id="table-visit">
     <thead>
         <tr>
             <th width="5%">Hours</th>
             {% for day in week_calendar %}
                 {% if day|date == current_absolute_date|date %}
-                    <th class="current" width='160px'>{{day|date:"l"}}</th>
+                    <th class="current" width='160px'>{{day|date:"l"}}, <span>{{day|date:"m-d"}}</span></th>
                 {% else %}
-                    <th width='160px'>{{day|date:"l"}}</th>
+                    <th width='160px'>{{day|date:"l"}}, <span>{{day|date:"m-d"}}</span></th>
                 {% endif %}
             {% endfor %}
         </tr>

@@ -77,6 +77,12 @@ class Schedule(models.Model):
     def __unicode__(self):
         return str(self.profile)
 
+    def edit_url(self):
+        return "/schedules/edit/" + str(self.id)
+
+    def detele_url(self):
+        return "/schedules/remove/" + str(self.id)
+
 
 class Problem(models.Model):
     """

@@ -46,13 +46,11 @@ $(document).ready(function() {
     if (current_view == 'days') {
         console.log('Days view');
         // Vertical line is used to indicate the current time
-        if (current_view !== 'months') {
-            load_vertical_line();
-        }
+        load_vertical_line();
         // Loading visits on particular date
-        load_visits(current_system_date, current_view);
+        load_days_view(current_system_date);
     } else if (current_view == 'weeks') {
-        console.log('Weeks view');
+        load_weeks_view();
     } else if (current_view == 'months') {
         load_months_view();
     }
@@ -86,6 +84,97 @@ $(document).ready(function() {
         format: 'yyyy-MM-dd hh:mm',
         pickSeconds: false
     });
+
+
+    function load_weeks_view() {
+        var rows = $('table.table-week-view tr')[1];
+        var date = null;
+        var length = 0;
+        /* jshint multistr: true */
+        var template = "<div id='{#sticker-id}' \
+            data-id={#data-id}\
+            data-from-date={#data-from-date}\
+            data-to-date={#data-to-date}\
+            data-problem={#data-problem}\
+            data-description={#data-description}\
+            data-client={#data-client}\
+            data-pet={#data-pet}\
+            data-appointment-to={#data-appointment-to}\
+            data-appointment-by={#data-appointment-by}\
+            style='top: {#top}px; left: {#left}px; width: {#width}px; height: {#height}px' \
+            class='sticker'>\
+            <span class='color-code-bar' style='background: {#background}'></span>\
+            {#time} {#content}\
+            </div>";
+
+        var visit_end = 0;
+        var visit_start = 0;
+        var time_diff = 0;
+        var time_diff_end = 0;
+        var top_gap = 0;
+        var bottom_gap = 0;
+        var top = 0;
+
+        var spacing_tr = $('table.table tr');
+        var spacing_td = $('table.table tr td');
+
+        // Element dimensions calculations
+        var element_width = spacing_td[1].offsetWidth*0.90;
+        var element_height = bottom_gap+20;
+
+        // Looping
+        $(rows.cells).each(function(index, element) {
+            date = element.getAttribute('data-date');
+            if (date !== null) {
+                timestamp_date = new Date(date).getTime();
+                $.getJSON('/api/visits/' + timestamp_date + '/', function(data) {
+                    length = data.length;
+                    if (length > 0) {
+                        for (i=0; i < length; i++) {
+                            sticker_id = "sticker-" + data[i].id;
+                            // Visit start and visit end proper parsing
+                            visit_end = new Date(Date.parse(data[i].to_date));
+                            visit_start = new Date(Date.parse(data[i].from_date));
+                            // Calculating time difference from the work_start_time
+                            // time_diff = Math.abs(visit_start.getTime() - work_start_time.getTime());
+                            time_diff = Math.abs(visit_start.getTime() - new Date(rows.cells[index].getAttribute('data-date')).getTime());
+                            // And from the visit_start
+                            time_diff_end = Math.abs(visit_end.getTime() - visit_start.getTime());
+                            top_gap = (spacing_tr[1].offsetHeight) * (Math.ceil(time_diff / (1000 * 60 * 15)) + 1);
+                            // Bottom gap indicates the end of the ticker
+                            bottom_gap = (spacing_tr[1].offsetHeight) * (Math.ceil(time_diff_end / (1000 * 60 * 15)));
+                            top = $(rows.cells[index]).position().top + top_gap + 2 - 35;
+                            left = $(rows.cells[index]).position().left + spacing_td[1].offsetWidth/2 - element_width/2 - 5;
+                            console.log(spacing_tr[1].offsetHeight, (Math.ceil(time_diff / (1000 * 60 * 15))));
+
+                            element = template
+                                .replace('{#time}', format_time(new Date(data[i].from_date)) + ' - ' + format_time(new Date(data[i].to_date)))
+                                .replace('{#sticker-id}', sticker_id)
+                                .replace('{#content}', data[i].description)
+                                .replace('{#top}', top)
+                                .replace('{#left}', left)
+                                .replace('{#height}', element_height)
+                                .replace('{#width}', element_width)
+                                .replace('{#background}', data[i].problem.color)
+                                .replace('{#data-id}', data[i].id)
+                                .replace('{#data-from-date}', data[i].from_date)
+                                .replace('{#data-to-date}', data[i].to_date)
+                                .replace('{#data-problem}', data[i].problem_id)
+                                .replace('{#data-description}', '"' +  data[i].description + '"')
+                                .replace('{#data-client}', '"' + data[i].client.first_name + ' ' + data[i].client.last_name + '"')
+                                .replace('{#data-pet}', data[i].pet.name)
+                                .replace('{#data-appointment-to}', data[i].appointment_to.id)
+                                .replace('{#data-appointment-by}', data[i].appointment_by.id);
+
+                            console.log('Docking');
+                            $('.sticky-dock').append(element);
+                        }
+                    }
+                    load_sticker_response();
+                });
+            }
+        });
+    }
 
     /**
      * Loading months view
@@ -227,7 +316,7 @@ $(document).ready(function() {
      * @param  {[type]} current_system_date [description]
      * @return {[type]}                     [description]
      */
-    function load_visits(current_system_date) {
+    function load_days_view(current_system_date) {
         /* Visits loading and management */
         $.get('/api/visits/' + current_system_date + '/')
         .done(function(data) {
