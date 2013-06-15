@@ -1,0 +1,26 @@
+{% extends "planner/index.html" %}
+
+{% block calendar %}
+
+<table class="table table-bordered table-hover table-month-view">
+    <tbody>
+{% for week in month_calendar %}
+        <tr>
+    {% for day in week %}
+        {% if day == 0 %}
+            <td class="disabled"></td>
+        {% else %}
+            <td 
+            {% if day|date == current_absolute_date|date %}class="current"{%endif%} 
+            data-date="{{day|date:'m/d/Y'}}"
+            >
+                {{day|date:'j'}}
+            </td>
+        {% endif %}
+    {% endfor %}
+        </tr>
+{% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

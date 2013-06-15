@@ -14,6 +14,7 @@ from crispy_forms.layout import Layout
 from crispy_forms.layout import Div
 from crispy_forms.bootstrap import AppendedText
 from crispy_forms.layout import Submit
+from crispy_forms.layout import Field
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.layout import Button
 
@@ -285,10 +286,14 @@ class DoctorForm(forms.Form):
         )
         super(DoctorForm, self).__init__(*args, **kwargs)
 
+
 class VisitForm(forms.Form):
     """
     The visit form
     """
+
+    id = forms.CharField(
+    )
 
     from_date = forms.DateTimeField(
     )
@@ -318,6 +323,9 @@ class VisitForm(forms.Form):
         self.helper.form_action = '/api/visits/'
         self.helper.form_id = 'visit-add-form'
         self.helper.layout = Layout(
+            Field(
+                'id', type='hidden'
+            ),
             Div(
                 Div(
                     AppendedText(

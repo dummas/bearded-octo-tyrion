@@ -14,32 +14,152 @@ from planner.forms import ProblemForm
 from planner.forms import VisitForm
 from planner.forms import ScheduleFrom
 from planner.forms import DoctorForm
+from planner import urls
 from planner.utils import sliced_time
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
 from django.core.paginator import PageNotAnInteger
 from django.utils import timezone
+from dateutil.relativedelta import relativedelta  # Relative Time Delta
+import calendar
 
 
 @login_required
-def index(request):
-    works_today = Schedule.objects.works_today()
-    current_time = timezone.now()
+def index(request, view=None, days=None, weeks=None, months=None):
+    """
+    The main page, depending on the described view
+
+    view:
+    - day
+    - week
+    - month
+
+    days:
+    - +1 ahead
+    - 0 current
+    - -1 before
+
+    weeks:
+    - +1 week ahead
+    - 0 current
+    - -1 week before
+
+    months:
+    - +1 month ahead
+    - 0 current
+    - -1 month before
+    """
+
+    available_views = ('days', 'months', 'weeks')
+
     all_works = Schedule.objects.all()
+
+    """
+    Current date
+    """
+    current_date = timezone.now()
+
+    """
+    Checking the date offsets
+    """
+    if days is not None:
+        days = int(days)
+        current_date = current_date + timezone.timedelta(days=days)
+    else:
+        days = 0  # Defines current date
+
+    if weeks is not None:
+        weeks = int(weeks)
+        current_date = current_date + relativedelta(weeks=weeks)
+    else:
+        weeks = 0  # Defines current week
+
+    if months is not None:
+        months = int(months)
+        current_date = current_date + relativedelta(months=months)
+    else:
+        months = 0  # Defines current month
+
+    """
+    Current month operations
+    """
+    calendar.setfirstweekday(0)
+    month_calendar = calendar.monthcalendar(
+        year=current_date.year,
+        month=current_date.month
+    )
+
+    """
+    Current week operations
+    """
+    week_calendar = []
+    for week in month_calendar:
+        if current_date.day in week:
+            week_calendar = week[:]
+
+    for i, day in enumerate(week_calendar):
+        if day != 0:
+            week_calendar[i] = timezone.datetime(
+                year=current_date.year,
+                month=current_date.month,
+                day=week_calendar[i]
+            )
+
+    """
+    Making calendar information more use-full
+    """
+    i = 0
+    day = 0
+    for i, week in enumerate(month_calendar):
+        for j, day in enumerate(week):
+            if month_calendar[i][j] != 0:
+                month_calendar[i][j] = timezone.datetime(
+                    year=current_date.year,
+                    month=current_date.month,
+                    day=month_calendar[i][j]
+                )
+
+    works_on_date = Schedule.objects.works_on_date(current_date)
+
     visit_form = VisitForm(initial={
         'appointment_by': Profile.objects.get(user__username=request.user).id
     })
+
+    if view not in available_views:
+        view = 'days'
+
+    if view == 'days':
+        next_date_url = ''.join((urls.days_url, str(days+1)))
+        prev_date_url = ''.join((urls.days_url, str(days-1)))
+        now_date_url = ''.join((urls.days_url, str(0)))
+    elif view == 'weeks':
+        next_date_url = ''.join((urls.weeks_url, str(weeks+1)))
+        prev_date_url = ''.join((urls.weeks_url, str(weeks-1)))
+        now_date_url = ''.join((urls.weeks_url, str(0)))
+    elif view == 'months':
+        next_date_url = ''.join((urls.months_url, str(months+1)))
+        prev_date_url = ''.join((urls.months_url, str(months-1)))
+        now_date_url = ''.join((urls.months_url, str(0)))
+
+    template = "".join(("calendar/", view, ".html"))
+
     sliced_time_current = sliced_time()
     sliced_time_shifted = sliced_time(shift=True)
 
-    return render(request, "planner/index.html", {
+    return render(request, template, {
         'title': 'Home',
         'active': 'overview',
-        'works_today': works_today,
+        'works_today': works_on_date,
         'all_works': all_works,
-        'current_time': current_time,
+        'prev_date_url': prev_date_url,
+        'now_date_url': now_date_url,
+        'next_date_url': next_date_url,
+        'current_date': current_date,
         'visit_form': visit_form,
+        'current_absolute_date': timezone.now(),
+        'month_calendar': month_calendar,
+        'week_calendar': week_calendar,
         'is_register': request.user.groups.filter(name='Registers'),
         'sliced_time': zip(sliced_time_current, sliced_time_shifted),
     })
@@ -65,7 +185,9 @@ def clients(request, client_edit_id=None, client_remove_id=None):
             return render(request, "planner/clients/edit.html", {
                 'client_form': client_form,
                 'client_edit_id': client_edit_id,
-                'pets': Pet.objects.filter(client=Client.objects.get(id=client_edit_id))
+                'pets': Pet.objects.filter(
+                    client=Client.objects.get(id=client_edit_id)
+                )
             })
 
     if client_remove_id:
@@ -75,9 +197,12 @@ def clients(request, client_edit_id=None, client_remove_id=None):
     elif client_edit_id:
         return render(request, "planner/clients/edit.html", {
             'client_form': ClientForm(
-                Client.objects.values().get(id=client_edit_id)),
+                Client.objects.values().get(id=client_edit_id)
+            ),
             'client_edit_id': client_edit_id,
-            'pets': Pet.objects.filter(client=Client.objects.get(id=client_edit_id))
+            'pets': Pet.objects.filter(
+                client=Client.objects.get(id=client_edit_id)
+            )
         })
 
     # Default list view
@@ -267,7 +392,7 @@ def visits(request, visit_edit_id=None, visit_remove_id=None):
         if visit_form.is_valid():
             visit = Visit
             try:
-                visit = Visit.objects.get(id=visit_edit_id)
+                visit = Visit.objects.get(id=visit_form.cleaned_data['id'])
             except visit.DoesNotExist:
                 return redirect('/visits/')
             visit.from_date = visit_form.cleaned_data['from_date']
@@ -276,8 +401,12 @@ def visits(request, visit_edit_id=None, visit_remove_id=None):
             visit.pet = visit_form.cleaned_data['pet']
             visit.problem = visit_form.cleaned_data['problem']
             visit.description = visit_form.cleaned_data['description']
-            visit.appointment_by = visit_form.cleaned_data['appointment_by']
-            visit.appointment_to = visit_form.cleaned_data['appointment_to']
+            visit.appointment_by = User.objects.get(
+                id=visit_form.cleaned_data['appointment_by'].id
+            )
+            visit.appointment_to = User.objects.get(
+                id=visit_form.cleaned_data['appointment_to'].id
+            )
             visit.save()
             return redirect('/visits/')
         else:
@@ -327,6 +456,8 @@ def visits(request, visit_edit_id=None, visit_remove_id=None):
         'is_register': request.user.groups.filter(name='Registers'),
         'visits': visits,
         'visit_form': VisitForm(initial={
-            'appointment_by': Profile.objects.get(user__username=request.user).id
+            'appointment_by': Profile.objects.get(
+                user__username=request.user
+            ).id
         })
     })

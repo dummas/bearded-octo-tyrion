@@ -1,4 +1,5 @@
 $(document).ready(function(){
+
     $("#client-add-form").submit(function(){ // Catching the form submit
         $.ajax({
             contentType: 'application/json',
@@ -19,6 +20,7 @@ $(document).ready(function(){
         });
         return false;
     });
+
     $("#pet-add-form").submit(function() {
         $.ajax({
             contentType: 'application/json',

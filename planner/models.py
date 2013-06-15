@@ -19,12 +19,22 @@ class ScheduleManager(models.Manager):
     """
     Custom Schedule manager
     """
-    def works_today(self):
+
+    def works_on_week(self, date=None):
+        """
+        Method returns all the doctors, which works on that day
+        """
+        pass
+
+    def works_on_date(self, date=None):
         """
         Method returns all the doctors, which works today
         """
-        today_midnight = timezone.now()
-        tomorow_midnight = timezone.now()
+        if date is None:
+            date = timezone.now()
+
+        today_midnight = date
+        tomorow_midnight = date
         today_midnight = today_midnight.replace(
             hour=0,
             minute=0,
@@ -152,10 +162,14 @@ class VisitManager(models.Manager):
         ).values(
             'description',
             'appointment_to',
+            'appointment_by',
             'client',
+            'pet',
             'from_date',
             'to_date',
-            'problem__color'
+            'problem__color',
+            'problem',
+            'id'
         )
 
         return visits
@@ -182,8 +196,8 @@ class Visit(models.Model):
     def edit_url(self):
         return '/visits/edit/' + str(self.id)
 
-    def delete_url(self):
-        return '/visits/delete/' + str(self.id)
+    def remove_url(self):
+        return '/visits/remove/' + str(self.id)
 
 
 def create_testuser(app, created_models, verbosity, **kwargs):

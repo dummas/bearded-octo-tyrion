@@ -6,37 +6,35 @@
 
     <div class="sticky-dock"></div>
 
-    <div class="hidden" id="current-system-date">{% now "m/d/Y" %}</div>
-    <table class="table table-bordered table-hover table-visit" id="table-visit">
-        <thead>
-            <tr>
-                <th width="5%">Hours</th>
-                {% for doctor in works_today %}
-                <th id="doctor-{{doctor.profile_id}}">{{doctor.profile__user__username}}</th>
-                {% endfor %}
-            </tr>
-        </thread>
-        <tbody>
-            {% for time1, time2 in sliced_time %}
-            <tr>
-                <td>{% if forloop.first %}<div class="hidden" id="work-start-time">{{time1|date:"Y-m-d H:i"}}</div>{% endif %}{{time1|date:"H:i"}}</td>
-                {% for doctor in works_today %}
-                    {% if doctor.start|date:"H:i" <= time1|date:"H:i" and doctor.end|date:"H:i" > time1|date:"H:i" %}
-                    <td class="success" 
-                        data-profile="{{ doctor.profile_id }}"
-                        data-time="{{ time1|date:'Y-m-d H:i' }}"
-                        data-time-next="{{ time2|date:'Y-m-d H:i' }}"
-                        >
-                        <a href="#visit-add-modal" data-toggle="modal">&nbsp;</a>
-                    </td>
-                    {% else %}
-                    <td class="pending"></td>
-                    {% endif %}
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        <div class="row">
+
+        <div class="span5">
+            <h1>{{ current_date|date:"Y-m-d, l" }}</h1>
+        </div>
+
+        <div class="span3">
+            <div class="pagination pagination-center">
+                <ul>
+                    <li><a href="{{prev_date_url}}">&laquo;</a></li>
+                    <li><a href="{{now_date_url}}">Current</a></li>
+                    <li><a href="{{next_date_url}}">&raquo;</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="span4">
+            <div class="pagination pagination-right">
+                <ul>
+                    <li><a href="/view/days">Days</a></li>
+                    <li><a href="/view/weeks">Weeks</a></li>
+                    <li><a href="/view/months">Months</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {% block calendar %}
+
+    {% endblock %}
 
     {% comment %}
     <p>Start of add modal</p>

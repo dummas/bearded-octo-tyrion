@@ -8,6 +8,10 @@ admin.autodiscover()
 urlpatterns = patterns(
     '',
     url(r'^$', 'planner.views.index'),
+    url(r'^view/(?P<view>[\w-]+)/$', 'planner.views.index'),
+    url(r'^view/(?P<view>[\w-]+)/day/(?P<days>[\w-]+)/$', 'planner.views.index'),
+    url(r'^view/(?P<view>[\w-]+)/week/(?P<weeks>[\w-]+)/$', 'planner.views.index'),
+    url(r'^view/(?P<view>[\w-]+)/month/(?P<months>[\w-]+)/$', 'planner.views.index'),
 
     # Visits
     url(r'^visits/$', 'planner.views.visits'),

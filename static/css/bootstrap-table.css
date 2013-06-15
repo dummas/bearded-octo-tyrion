@@ -16,3 +16,15 @@
 .table-visit a:hover {
     text-decoration: none;
 }
+
+ .current {
+    background: #e0f9ff;
+}
+
+table .disabled {
+    background: #eaeaea;   
+}
+
+.table-month-view td {
+    height: 150px;
+}
