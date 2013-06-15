@@ -45,13 +45,13 @@ class Profile(models.Model):
         """
         Returns the edit anchor
         """
-        return "/accounts/edit/" + str(self.id)
+        return "/profiles/edit/" + str(self.id)
 
-    def remove_url(self):
+    def delete_url(self):
         """
         Returns the remove anchor
         """
-        return "/accounts/remove/" + str(self.id)
+        return "/profiles/remove/" + str(self.id)
 
 
 def create_user_profile(

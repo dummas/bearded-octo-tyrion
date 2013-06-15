@@ -32,16 +32,16 @@
                 <th>Email</th>
                 <th>&nbsp;</th>
             </tr>
-            {% for doctor in doctors %}
+            {% for profile in profiles %}
             <tr>
-                <td>{{doctor.id}}</td>
-                <td>{{doctor.username}}</td>
-                <td>{{doctor.email}}</td>
+                <td>{{profile.id}}</td>
+                <td>{{profile.user.username}}</td>
+                <td>{{profile.user.email}}</td>
                 <td class="row-options">
-                    <a role="button" class="btn btn-mini btn-wider" href="{{ doctor.edit_url }}">
+                    <a role="button" class="btn btn-mini btn-wider" href="{{ profile.edit_url }}">
                         <i class="icon-edit"></i>
                     </a>
-                    <a role="button" class="btn btn-mini btn-wider btn-warning" href="{{ doctor.delete_url }}">
+                    <a role="button" class="btn btn-mini btn-wider btn-warning" href="{{ profile.delete_url }}">
                         <i class="icon-remove-sign"></i>
                     </a>
                 </td>
@@ -50,19 +50,19 @@
         </table>
         <div class="pagination">
             <ul>
-                {% if doctors.has_previous %}
+                {% if profiles.has_previous %}
                 <li>
-                    <a href="?page={{ doctors.previous_page_number }}">&laquo;</a>
+                    <a href="?page={{ profiles.previous_page_number }}">&laquo;</a>
                 </li>
                 {% else %}
                 <li class="disabled">
-                    <a href="?page={{ doctors.previous_page_number }}">&laquo;</a>
+                    <a href="?page={{ profiles.previous_page_number }}">&laquo;</a>
                 </li>
                 {% endif %}
                 
 
-                {% for page in doctors.paginator.page_range %}
-                    {% if page == doctors.number %}
+                {% for page in profiles.paginator.page_range %}
+                    {% if page == profiles.number %}
                     <li class="disabled">
                         <a href="?page={{ page }}">{{page}}</a>
                     </li>
@@ -74,13 +74,13 @@
                 {% endfor %}
 
                 
-                {% if doctors.has_next %}
+                {% if profiles.has_next %}
                 <li>
-                    <a href="?page={{ doctors.next_page_number }}">&raquo;</a>
+                    <a href="?page={{ profiles.next_page_number }}">&raquo;</a>
                 </li>
                 {% else %}
                 <li class="disabled">
-                    <a href="?page={{ doctors.next_page_number }}">&raquo;</a>
+                    <a href="?page={{ profiles.next_page_number }}">&raquo;</a>
                 </li>
                 {% endif %}
                 
@@ -92,14 +92,14 @@
 {% comment %}
 <p>Start of add modal</p>
 {% endcomment %}
-<div id="doctor-add-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="Adddoctor" aria-hidden="true">
+<div id="profile-add-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="Adddoctor" aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="Adddoctor">Doctor Add</h3>
     </div>
     <div class="modal-body">
         {% load crispy_forms_tags %}
-        {% crispy doctor_form %}
+        {% crispy profile_form %}
     </div>
 </div>
 {% endblock %}

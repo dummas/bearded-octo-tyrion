@@ -96,6 +96,37 @@ class Problem(models.Model):
         return str(self.code)
 
 
+class ClientManager(models.Manager):
+    """
+    Client Manager
+    """
+    def find_or_create(self, full_name=None):
+        """
+        Searching for the client by full_name
+
+        full_name consists:
+        - first_name
+        - last_name
+        """
+        first_name = full_name.split()[0]
+        last_name = full_name.split()[1]
+
+        client = Client
+        try:
+            client = Client.objects.get(
+                first_name=first_name,
+                last_name=last_name
+            )
+        except client.DoesNotExist:
+            client = Client(
+                first_name=first_name,
+                last_name=last_name
+            )
+            client.save()
+
+        return client
+
+
 class Client(models.Model):
     """
     The clients
@@ -103,6 +134,8 @@ class Client(models.Model):
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
     telephone = models.CharField(max_length=200)
+
+    objects = ClientManager()
 
     def __unicode__(self):
         return self.first_name + " " + self.last_name
@@ -114,12 +147,41 @@ class Client(models.Model):
         return '/clients/remove/' + str(self.id)
 
 
+class PetManager(models.Manager):
+    """
+    Pet Manager
+    """
+    def find_or_create(self, name=None, client=None):
+        """
+        Finding the pet
+
+        - name -- name of the pet
+        - client -- client of the pet
+        """
+        pet = Pet
+        try:
+            pet = Pet.objects.get(
+                name=name,
+                client=client
+            )
+        except pet.DoesNotExist:
+            pet = Pet(
+                name=name,
+                client=client
+            )
+            pet.save()
+
+        return pet
+
+
 class Pet(models.Model):
     """
     The Pets
     """
     client = models.ForeignKey(Client)
     name = models.CharField(max_length=200)
+
+    objects = PetManager()
 
     def __unicode__(self):
         return self.name
@@ -142,7 +204,6 @@ class VisitManager(models.Manager):
         """
         timestamp = int(timestamp)
         datetime_around = datetime.fromtimestamp(timestamp/1000.0)
-        print datetime_around
         today_midnight = datetime_around
         tomorow_midnight = datetime_around
         today_midnight = today_midnight.replace(
@@ -156,21 +217,23 @@ class VisitManager(models.Manager):
             minute=59,
             second=59,
             microsecond=0)
+
         visits = Visit.objects.filter(
             from_date__gte=today_midnight,
             from_date__lte=tomorow_midnight
-        ).values(
-            'description',
-            'appointment_to',
-            'appointment_by',
-            'client',
-            'pet',
-            'from_date',
-            'to_date',
-            'problem__color',
-            'problem',
-            'id'
         )
+        # ).values(
+        #     'description',
+        #     'appointment_to',
+        #     'appointment_by',
+        #     'client',
+        #     'pet',
+        #     'from_date',
+        #     'to_date',
+        #     'problem__color',
+        #     'problem',
+        #     'id'
+        # )
 
         return visits
 

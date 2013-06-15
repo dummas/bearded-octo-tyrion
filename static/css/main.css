@@ -12,6 +12,11 @@ table .row-options {
     width: 80px;
 }
 
+
+/**
+ * Sticker part
+ */
+
 .sticker {
     position: absolute;
     background: #fff;
@@ -20,9 +25,23 @@ table .row-options {
     border-radius: 3px;
     overflow: hidden;
 }
+
+.month-sticker {
+    background: #fff;
+    padding: 2px;
+    margin: 2px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
 .sticker:hover {
     border: 1px solid #333;
     padding: 4px;
+}
+
+.month-sticker:hover {
+    border: 1px solid #333;
+    padding: 1px;
 }
 
 .sticker .times {
@@ -39,6 +58,16 @@ table .row-options {
     clear: both;
     background-color: #fff;
     padding-left: 2px;
+}
+
+.month-sticker .color-code-bar {
+    width: 15px;
+    height: 15px;
+    margin-top: 2px;
+    margin-left: 2px;
+    margin-right: 5px;
+    font-size: 0;
+    float: left;
 }
 .sticker .color-code-bar {
     width: 20px;
@@ -57,4 +86,7 @@ table .row-options {
 }
 .masthead {
     margin-bottom: 50px;
+}
+.typeahead {
+    z-index: 1100;
 }

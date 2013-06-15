@@ -25,6 +25,9 @@ $(document).ready(function() {
         return false;
     });
 
+    // Color picker
+    $("#id_color").colorpicker();
+
     /**
      * This is only valid to day view
      */
@@ -32,18 +35,26 @@ $(document).ready(function() {
     // Getting current system date
     var current_system_date = new Date($("#current-system-date").text()).getTime();
     // Getting work start time
-    // 
     // This is used to know the start of the element
     var work_start_time = new Date($("#work-start-time").text());
+
+    var current_view = $("#current-view").text();
 
     /*
      * If the current system date exists
      */
-    if (current_system_date) {
+    if (current_view == 'days') {
+        console.log('Days view');
         // Vertical line is used to indicate the current time
-        load_vertical_line();
+        if (current_view !== 'months') {
+            load_vertical_line();
+        }
         // Loading visits on particular date
-        load_visits(current_system_date);
+        load_visits(current_system_date, current_view);
+    } else if (current_view == 'weeks') {
+        console.log('Weeks view');
+    } else if (current_view == 'months') {
+        load_months_view();
     }
 
     /**
@@ -51,10 +62,10 @@ $(document).ready(function() {
      * 
      * @return {[type]} [description]
      */
-    $("#id_client").change(function() {
-        var client_id = $(this).val();
-        load_pets(client_id);
-    });
+    // $("#id_client").change(function() {
+    //     var client_id = $(this).val();
+    //     load_pets(client_id);
+    // });
 
     /**
      * Date picker part
@@ -75,6 +86,64 @@ $(document).ready(function() {
         format: 'yyyy-MM-dd hh:mm',
         pickSeconds: false
     });
+
+    /**
+     * Loading months view
+     * 
+     * @return {[type]} [description]
+     */
+    function load_months_view() {
+        var elements = $('table.table-month-view td');
+        var i = 0;
+        var date = null;
+        var entry = null;
+        var length = 0;
+        var entry_data = Object;
+        /* jshint multistr: true */
+        var template = "<div id='{#sticker-id}' \
+            data-id={#data-id}\
+            data-from-date={#data-from-date}\
+            data-to-date={#data-to-date}\
+            data-problem={#data-problem}\
+            data-description={#data-description}\
+            data-client={#data-client}\
+            data-pet={#data-pet}\
+            data-appointment-to={#data-appointment-to}\
+            data-appointment-by={#data-appointment-by}\
+            class='month-sticker'>\
+            <span class='color-code-bar' style='background: {#background}'></span>\
+            {#time}\
+            </div>";
+        elements.each(function(index, element) {
+            date = element.getAttribute('data-date');
+            if (date !== null) {
+                date = new Date(date).getTime();
+                $.getJSON('/api/visits/' + date + '/', function(data) {
+                    length = data.length;
+                    if (length > 0) {
+                        for(i=0; i < length; i++) {
+                            sticker_id = "sticker-" + data[i].id;
+                            entry = template
+                                .replace('{#time}', format_time(new Date(data[i].from_date)) + ' - ' + format_time(new Date(data[i].to_date)))
+                                .replace('{#sticker-id}', sticker_id)
+                                .replace('{#background}', data[i].problem.color)
+                                .replace('{#data-id}', data[i].id)
+                                .replace('{#data-from-date}', data[i].from_date)
+                                .replace('{#data-to-date}', data[i].to_date)
+                                .replace('{#data-problem}', data[i].problem_id)
+                                .replace('{#data-description}', '"' +  data[i].description + '"')
+                                .replace('{#data-client}', '"' + data[i].client.first_name + ' ' + data[i].client.last_name + '"')
+                                .replace('{#data-pet}', data[i].pet.name)
+                                .replace('{#data-appointment-to}', data[i].appointment_to.id)
+                                .replace('{#data-appointment-by}', data[i].appointment_by.id);
+                            $(element).append(entry);
+                        }
+                    }
+                    load_sticker_response();
+                });
+            }
+        });
+    }
 
     /**
      * Displaying the vertical line
@@ -113,7 +182,7 @@ $(document).ready(function() {
         var description = [];
         var appointment_to = [];
         var appointment_by = [];
-        $('.sticker').each(function(index) {
+        $('.sticker, .month-sticker').each(function(index) {
             $(this).click(function(event) {
                 console.log(event);
                 /**
@@ -171,20 +240,27 @@ $(document).ready(function() {
             var work_start = new Date();
             var sticker_id = null;
             for (var i = 0; i < data.length; i++) {
+
                 // Visit start and visit end proper parsing
                 visit_end = new Date(Date.parse(data[i].to_date));
                 visit_start = new Date(Date.parse(data[i].from_date));
 
+                // Calculating time difference from the work_start_time
                 var time_diff = Math.abs(visit_start.getTime() - work_start_time.getTime());
+                // And from the visit_start
                 var time_diff_end = Math.abs(visit_end.getTime() - visit_start.getTime());
 
-                doctor = $('#doctor-' + data[i].appointment_to);
+                // Search the doctor
+                doctor = $('#doctor-' + data[i].appointment_to.id);
+
+                // Calculate the spacings
                 spacing_tr = $('table.table tr');
                 spacing_td = $('table.table tr td');
+
+                // Check if the doctor exists in the table
                 if (doctor.length !== 0) {
 
                     sticker_id = "sticker-" + data[i].id;
-
                     // Top gap indicates the start of the sticker
                     top_gap = (spacing_tr[1].offsetHeight) * (Math.ceil(time_diff / (1000 * 60 * 15)) + 1);
                     // Bottom gap indicates the end of the ticker
@@ -220,16 +296,16 @@ $(document).ready(function() {
                         .replace('{#left}', left)
                         .replace('{#height}', element_height)
                         .replace('{#width}', element_width)
-                        .replace('{#background}', data[i].problem__color)
+                        .replace('{#background}', data[i].problem.color)
                         .replace('{#data-id}', data[i].id)
                         .replace('{#data-from-date}', data[i].from_date)
                         .replace('{#data-to-date}', data[i].to_date)
-                        .replace('{#data-problem}', data[i].problem)
+                        .replace('{#data-problem}', data[i].problem_id)
                         .replace('{#data-description}', '"' +  data[i].description + '"')
-                        .replace('{#data-client}', data[i].client)
-                        .replace('{#data-pet}', data[i].pet)
-                        .replace('{#data-appointment-to}', data[i].appointment_to)
-                        .replace('{#data-appointment-by}', data[i].appointment_by);
+                        .replace('{#data-client}', '"' + data[i].client.first_name + ' ' + data[i].client.last_name + '"')
+                        .replace('{#data-pet}', data[i].pet.name)
+                        .replace('{#data-appointment-to}', data[i].appointment_to.id)
+                        .replace('{#data-appointment-by}', data[i].appointment_by.id);
 
                     $('.sticky-dock').append(element);
                 }
@@ -262,10 +338,14 @@ $(document).ready(function() {
      */
     function format_time(x) {
         var minute = x.getMinutes();
+        var hour = x.getHours();
         if (minute.toString().length == 1) {
             minute = '0' + minute.toString();
         }
-        return x.getHours() + ':' + minute;
+        if (hour.toString().length == 1) {
+            hour = '0' + hour.toString();
+        }
+        return hour + ':' + minute;
     }
 
     /**
@@ -289,4 +369,23 @@ $(document).ready(function() {
         }
         return x.getFullYear() + '-' + month + '-' + day + ' ' + x.getHours() + ':' + minute;
     }
+
+    /**
+     * Type Ahead
+     */
+    $('#id_client').typeahead({
+        ajax: {
+            url: '/api/clients/',
+            method: 'get',
+            triggerLength: 1
+        },
+        display: 'full_name'
+    });
+    $("#id_pet").typeahead({
+        ajax: {
+            url: '/api/pets/',
+            method: 'get',
+            triggerLength: 1
+        }
+    });
 });

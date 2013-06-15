@@ -27,4 +27,5 @@ table .disabled {
 
 .table-month-view td {
     height: 150px;
+    width: 150px;
 }

@@ -13,7 +13,6 @@ from planner.forms import PetForm
 from planner.forms import ProblemForm
 from planner.forms import VisitForm
 from planner.forms import ScheduleFrom
-from planner.forms import DoctorForm
 from planner import urls
 from planner.utils import sliced_time
 from django.contrib.auth.models import User
@@ -202,7 +201,11 @@ def clients(request, client_edit_id=None, client_remove_id=None):
             'client_edit_id': client_edit_id,
             'pets': Pet.objects.filter(
                 client=Client.objects.get(id=client_edit_id)
-            )
+            ),
+            'visits': Visit.objects.filter(
+                client=Client.objects.get(id=client_edit_id)
+            ),
+            'is_register': request.user.groups.filter(name='Registers'),
         })
 
     # Default list view
@@ -268,7 +271,8 @@ def pets(request, pet_edit_id=None, pet_remove_id=None):
         else:
             return render(request, "planner/pets/edit.html", {
                 'pet_form': pet_form,
-                'pet_edit_id': pet_edit_id
+                'pet_edit_id': pet_edit_id,
+                'is_register': request.user.groups.filter(name='Registers'),
             })
 
     if pet_remove_id:
@@ -276,10 +280,14 @@ def pets(request, pet_edit_id=None, pet_remove_id=None):
         pet.delete()
         return redirect('/pets/')
     elif pet_edit_id:
+        pet = Pet.objects.get(id=pet_edit_id)
         return render(request, "planner/pets/edit.html", {
-            'pet_form': PetForm(
-                Pet.objects.values().get(id=pet_edit_id)),
-            'pet_edit_id': pet_edit_id
+            'pet_form': PetForm({
+                'name': pet.name,
+                'client': pet.client
+            }),
+            'pet_edit_id': pet_edit_id,
+            'is_register': request.user.groups.filter(name='Registers'),
         })
 
     # This is the default list view
@@ -304,34 +312,6 @@ def pets(request, pet_edit_id=None, pet_remove_id=None):
 
 
 @login_required
-def doctors(request):
-    """
-    The doctors view
-    * @TODO:
-    *   - Add edit capability
-    """
-
-    doctors_list = User.objects.filter(groups__name='Doctors')
-    paginator = Paginator(doctors_list, 25)  # 25 items per page
-
-    page = request.GET.get('page')
-    try:
-        doctors = paginator.page(page)
-    except PageNotAnInteger:
-        doctors = paginator.page(1)
-    except EmptyPage:
-        doctors = paginator.page(paginator.num_pages)
-
-    return render(request, "planner/doctors/index.html", {
-        'title': 'Doctors',
-        'active': 'doctors',
-        'is_register': request.user.groups.filter(name='Registers'),
-        'doctors': doctors,
-        'doctor_form': DoctorForm
-    })
-
-
-@login_required
 def problems(request, problem_edit_id=None, problem_remove_id=None):
     if request.method == 'POST':
         problem_form = ProblemForm(request.POST)
@@ -350,7 +330,8 @@ def problems(request, problem_edit_id=None, problem_remove_id=None):
         else:
             return render(request, "planner/problems/edit.html", {
                 'problem_form': problem_form,
-                'problem_edit_id': problem_edit_id
+                'problem_edit_id': problem_edit_id,
+                'is_register': request.user.groups.filter(name='Registers'),
             })
 
     if problem_remove_id:
@@ -361,7 +342,8 @@ def problems(request, problem_edit_id=None, problem_remove_id=None):
         return render(request, "planner/problems/edit.html", {
             'problem_form': ProblemForm(
                 Problem.objects.values().get(id=problem_edit_id)),
-            'problem_edit_id': problem_edit_id
+            'problem_edit_id': problem_edit_id,
+            'is_register': request.user.groups.filter(name='Registers'),
         })
 
     # This is the default list view
@@ -412,7 +394,8 @@ def visits(request, visit_edit_id=None, visit_remove_id=None):
         else:
             return render(request, "planner/visits/edit.html", {
                 'visit_form': visit_form,
-                'visit_edit_id': visit_edit_id
+                'visit_edit_id': visit_edit_id,
+                'is_register': request.user.groups.filter(name='Registers'),
             })
 
     if visit_remove_id:
@@ -436,7 +419,8 @@ def visits(request, visit_edit_id=None, visit_remove_id=None):
         visit_form.helper.form_id = 'visit-edit-form'
         return render(request, "planner/visits/edit.html", {
             'visit_form': visit_form,
-            'visit_edit_id': visit_edit_id
+            'visit_edit_id': visit_edit_id,
+            'is_register': request.user.groups.filter(name='Registers'),
         })
 
     # This is the default list view

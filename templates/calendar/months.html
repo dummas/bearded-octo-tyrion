@@ -2,6 +2,7 @@
 
 {% block calendar %}
 
+<div class="hidden" id="current-view">months</div>
 <table class="table table-bordered table-hover table-month-view">
     <tbody>
 {% for week in month_calendar %}
@@ -11,10 +12,12 @@
             <td class="disabled"></td>
         {% else %}
             <td 
-            {% if day|date == current_absolute_date|date %}class="current"{%endif%} 
+            {% if day|date == current_absolute_date|date %}
+                class="current"
+            {% endif %} 
             data-date="{{day|date:'m/d/Y'}}"
             >
-                {{day|date:'j'}}
+                <div>{{day|date:'j'}}</div>
             </td>
         {% endif %}
     {% endfor %}

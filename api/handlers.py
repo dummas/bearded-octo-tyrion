@@ -7,6 +7,7 @@ from planner.models import Visit
 from planner.models import Problem
 from planner.models import Schedule
 from accounts.models import Profile
+from django.core import serializers
 
 
 class ProfileHandler(BaseHandler):
@@ -164,6 +165,21 @@ class PetHandler(BaseHandler):
 class VisitHandler(BaseHandler):
     model = Visit
 
+    fields = (
+        'visits', ('id'),
+        'from_date',
+        'to_date',
+        'client',
+        'client_id',
+        'pet',
+        'pet_id',
+        'problem_id',
+        'problem',
+        'description',
+        'appointment_to',
+        'appointment_by'
+    )
+
     def read(self, request, timestamp=None):
         if timestamp:
             return Visit.objects.on_that_day(timestamp)
@@ -177,12 +193,25 @@ class VisitHandler(BaseHandler):
             visit = Visit(
                 from_date=data['from_date'],
                 to_date=data['to_date'],
-                problem=Problem.objects.get(id=data['problem']),
+                problem=Problem.objects.get(
+                    id=data['problem']
+                ),
                 description=data['description'],
-                client=Client.objects.get(id=data['client']),
-                pet=Pet.objects.get(id=data['pet']),
-                appointment_to=User.objects.get(id=data['appointment_to']),
-                appointment_by=User.objects.get(id=data['appointment_by'])
+                client=Client.objects.find_or_create(
+                    full_name=data['client']
+                ),
+                pet=Pet.objects.find_or_create(
+                    name=data['pet'],
+                    client=Client.objects.find_or_create(
+                        full_name=data['client']
+                    )
+                ),
+                appointment_to=User.objects.get(
+                    id=data['appointment_to']
+                ),
+                appointment_by=User.objects.get(
+                    id=data['appointment_by']
+                )
             )
             visit.save()
             return rc.CREATED
@@ -202,10 +231,19 @@ class VisitHandler(BaseHandler):
 
             visit.from_date = data['from_date']
             visit.to_date = data['to_date']
-            visit.problem = Problem.objects.get(id=data['problem'])
+            visit.problem = Problem.objects.get(
+                id=data['problem']
+            )
             visit.description = data['description']
-            visit.client = Client.objects.get(id=data['client'])
-            visit.pet = Pet.objects.get(id=data['pet'])
+            visit.client = Client.objects.find_or_create(
+                full_name=data['client']
+            )
+            visit.pet = Pet.objects.find_or_create(
+                name=data['pet'],
+                client=Client.objects.find_or_create(
+                    full_name=data['client']
+                )
+            )
             visit.appointment_to = User.objects.get(
                 id=data['appointment_to'])
             visit.appointment_by = User.objects.get(
@@ -225,7 +263,15 @@ class ClientHandler(BaseHandler):
     model = Client
 
     def read(self, request):
-        return Client.objects.all()
+        results_list = []
+        for client in Client.objects.all():
+            results_list.append({
+                'id': client.id,
+                'full_name': client.first_name + ' ' + client.last_name,
+                'first_name': client.first_name,
+                'last_name': client.last_name
+            })
+        return results_list
 
     def create(self, request):
         if request.content_type:
