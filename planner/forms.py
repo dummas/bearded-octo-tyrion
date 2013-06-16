@@ -36,7 +36,7 @@ class SinginForm(forms.Form):
         self._errors[NON_FIELD_ERRORS].append(message)
 
 
-class ScheduleFrom(forms.Form):
+class ScheduleForm(forms.Form):
     """
     Schedule Management form
     """
@@ -85,7 +85,7 @@ class ScheduleFrom(forms.Form):
                 Button('cancel', 'Cancel', css_class='btn', data_dismiss='modal')
             )
         )
-        super(ScheduleFrom, self).__init__(*args, **kwargs)
+        super(ScheduleForm, self).__init__(*args, **kwargs)
 
 
 class ClientForm(forms.Form):

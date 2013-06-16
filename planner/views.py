@@ -12,7 +12,7 @@ from planner.forms import ClientForm
 from planner.forms import PetForm
 from planner.forms import ProblemForm
 from planner.forms import VisitForm
-from planner.forms import ScheduleFrom
+from planner.forms import ScheduleForm
 from planner import urls
 from planner.utils import sliced_time
 from django.contrib.auth.models import User
@@ -121,7 +121,7 @@ def index(request, view=None, days=None, weeks=None, months=None):
 
     works_on_date = Schedule.objects.works_on_date(current_date)
 
-    visit_form = VisitForm(initial={
+    form = VisitForm(initial={
         'appointment_by': Profile.objects.get(user__username=request.user).id
     })
 
@@ -155,7 +155,7 @@ def index(request, view=None, days=None, weeks=None, months=None):
         'now_date_url': now_date_url,
         'next_date_url': next_date_url,
         'current_date': current_date,
-        'visit_form': visit_form,
+        'form': form,
         'current_absolute_date': timezone.now(),
         'month_calendar': month_calendar,
         'week_calendar': week_calendar,
@@ -165,45 +165,48 @@ def index(request, view=None, days=None, weeks=None, months=None):
 
 
 @login_required
-def clients(request, client_edit_id=None, client_remove_id=None):
+def clients(request, edit_id=None, remove_id=None):
     if request.method == 'POST':
-        client_form = ClientForm(request.POST)
-        if client_form.is_valid():
+        form = ClientForm(request.POST)
+        if form.is_valid():
             client = Client
             try:
-                client = Client.objects.get(id=client_edit_id)
+                client = Client.objects.get(id=edit_id)
             except client.DoesNotExists:
                 return redirect('/clients/')
 
-            client.first_name = client_form.cleaned_data['first_name']
-            client.last_name = client_form.cleaned_data['last_name']
-            client.telephone = client_form.cleaned_data['telephone']
+            client.first_name = form.cleaned_data['first_name']
+            client.last_name = form.cleaned_data['last_name']
+            client.telephone = form.cleaned_data['telephone']
             client.save()
             return redirect('/clients/')
         else:
             return render(request, "planner/clients/edit.html", {
-                'client_form': client_form,
-                'client_edit_id': client_edit_id,
+                'form': form,
+                'edit_id': edit_id,
                 'pets': Pet.objects.filter(
-                    client=Client.objects.get(id=client_edit_id)
+                    client=Client.objects.get(id=edit_id)
                 )
             })
 
-    if client_remove_id:
-        client = Client.objects.get(id=client_remove_id)
+    if remove_id:
+        client = Client.objects.get(id=remove_id)
         client.delete()
         return redirect('/clients/')
-    elif client_edit_id:
+    elif edit_id:
+        form = ClientForm(
+            Client.objects.values().get(id=edit_id)
+        )
+        form.helper.form_action = '/clients/'
+        form.helper.form_id = 'client-edit-form'
         return render(request, "planner/clients/edit.html", {
-            'client_form': ClientForm(
-                Client.objects.values().get(id=client_edit_id)
-            ),
-            'client_edit_id': client_edit_id,
+            'form': form,
+            'edit_id': edit_id,
             'pets': Pet.objects.filter(
-                client=Client.objects.get(id=client_edit_id)
+                client=Client.objects.get(id=edit_id)
             ),
             'visits': Visit.objects.filter(
-                client=Client.objects.get(id=client_edit_id)
+                client=Client.objects.get(id=edit_id)
             ),
             'is_register': request.user.groups.filter(name='Registers'),
         })
@@ -225,15 +228,52 @@ def clients(request, client_edit_id=None, client_remove_id=None):
         'active': 'clients',
         'is_register': request.user.groups.filter(name='Registers'),
         'clients': clients,
-        'client_form': ClientForm
+        'form': ClientForm
     })
 
 
 @login_required
-def schedules(request):
+def schedules(request, edit_id=None, remove_id=None):
     """
     Schedule front-end manager
     """
+    if request.method == 'POST':
+        form = ScheduleForm(request.POST)
+        if form.is_valid():
+            schedule = Schedule
+            try:
+                schedule = Schedule.objects.get(id=edit_id)
+            except schedule.DoesNotExists:
+                return redirect('/schedules/')
+            # Add the fields
+            schedule.save()
+            return redirect('/schedules/')
+        else:
+            return render(request, "planner/schedules/edit.html", {
+                'form': form,
+                'edit_id': edit_id,
+                'is_register': request.user.groups.filter(name='Registers'),
+            })
+
+    if remove_id:
+        schedule = Schedule.objects.get(id=remove_id)
+        schedule.delete()
+        return redirect('/schedules/')
+    elif edit_id:
+        schedule = Schedule.objects.get(id=edit_id)
+        form = ScheduleForm({
+            'profile': schedule.profile,
+            'start': schedule.start,
+            'end': schedule.end
+        })
+        form.helper.form_action = '/schedules/'
+        form.helper.form_id = 'schedule-edit-form'
+        return render(request, "planner/schedules/edit.html", {
+            'form': form,
+            'edit_id': edit_id,
+            'is_register': request.user.groups.filter(name='Registers'),
+        })
+
     schedules_list = Schedule.objects.all()
     paginator = Paginator(schedules_list, 25)  # 25 Items per page
 
@@ -250,43 +290,46 @@ def schedules(request):
         'active': 'schedules',
         'is_register': request.user.groups.filter(name='Registers'),
         'schedules': schedules,
-        'schedule_form': ScheduleFrom
+        'form': ScheduleForm
     })
 
 
 @login_required
-def pets(request, pet_edit_id=None, pet_remove_id=None):
+def pets(request, edit_id=None, remove_id=None):
     if request.method == 'POST':
-        pet_form = PetForm(request.POST)
-        if pet_form.is_valid():
+        form = PetForm(request.POST)
+        if form.is_valid():
             pet = Pet
             try:
-                pet = Pet.objects.get(id=pet_edit_id)
+                pet = Pet.objects.get(id=edit_id)
             except pet.DoesNotExists:
                 return redirect('/pets/')
 
-            pet.name = pet_form.cleaned_data['name']
+            pet.name = form.cleaned_data['name']
             pet.save()
             return redirect('/pets/')
         else:
             return render(request, "planner/pets/edit.html", {
-                'pet_form': pet_form,
-                'pet_edit_id': pet_edit_id,
+                'form': form,
+                'edit_id': edit_id,
                 'is_register': request.user.groups.filter(name='Registers'),
             })
 
-    if pet_remove_id:
-        pet = Pet.objects.get(id=pet_remove_id)
+    if remove_id:
+        pet = Pet.objects.get(id=remove_id)
         pet.delete()
         return redirect('/pets/')
-    elif pet_edit_id:
-        pet = Pet.objects.get(id=pet_edit_id)
+    elif edit_id:
+        pet = Pet.objects.get(id=edit_id)
+        form = PetForm({
+            'name': pet.name,
+            'client': pet.client
+        })
+        form.helper.form_action = '/pets/'
+        form.helper.form_id = 'pet-edit-form'
         return render(request, "planner/pets/edit.html", {
-            'pet_form': PetForm({
-                'name': pet.name,
-                'client': pet.client
-            }),
-            'pet_edit_id': pet_edit_id,
+            'form': form,
+            'edit_id': edit_id,
             'is_register': request.user.groups.filter(name='Registers'),
         })
 
@@ -307,42 +350,46 @@ def pets(request, pet_edit_id=None, pet_remove_id=None):
         'active': 'pets',
         'is_register': request.user.groups.filter(name='Registers'),
         'pets': pets,
-        'pet_form': PetForm
+        'form': PetForm
     })
 
 
 @login_required
-def problems(request, problem_edit_id=None, problem_remove_id=None):
+def problems(request, edit_id=None, remove_id=None):
     if request.method == 'POST':
-        problem_form = ProblemForm(request.POST)
-        if problem_form.is_valid():
+        form = ProblemForm(request.POST)
+        if form.is_valid():
             problem = Problem
             try:
-                problem = Problem.objects.get(id=problem_edit_id)
+                problem = Problem.objects.get(id=edit_id)
             except problem.DoesNotExists:
                 return redirect('/problems/')
 
-            problem.name = problem_form.cleaned_data['name']
-            problem.code = problem_form.cleaned_data['code']
-            problem.color = problem_form.cleaned_data['color']
+            problem.name = form.cleaned_data['name']
+            problem.code = form.cleaned_data['code']
+            problem.color = form.cleaned_data['color']
             problem.save()
             return redirect('/problems/')
         else:
             return render(request, "planner/problems/edit.html", {
-                'problem_form': problem_form,
-                'problem_edit_id': problem_edit_id,
+                'form': form,
+                'edit_id': edit_id,
                 'is_register': request.user.groups.filter(name='Registers'),
             })
 
-    if problem_remove_id:
-        problem = Problem.objects.get(id=problem_remove_id)
+    if remove_id:
+        problem = Problem.objects.get(id=remove_id)
         problem.delete()
         return redirect('/problems/')
-    elif problem_edit_id:
+    elif edit_id:
+        form = ProblemForm(
+            Problem.objects.values().get(id=edit_id)
+        )
+        form.helper.form_action = '/problems/'
+        form.helper.form_id = 'problem-edit-form'
         return render(request, "planner/problems/edit.html", {
-            'problem_form': ProblemForm(
-                Problem.objects.values().get(id=problem_edit_id)),
-            'problem_edit_id': problem_edit_id,
+            'form': form,
+            'edit_id': edit_id,
             'is_register': request.user.groups.filter(name='Registers'),
         })
 
@@ -363,48 +410,48 @@ def problems(request, problem_edit_id=None, problem_remove_id=None):
         'active': 'problems',
         'problems': problems,
         'is_register': request.user.groups.filter(name='Registers'),
-        'problem_form': ProblemForm
+        'form': ProblemForm
     })
 
 
 @login_required
-def visits(request, visit_edit_id=None, visit_remove_id=None):
+def visits(request, edit_id=None, remove_id=None):
     if request.method == 'POST':
-        visit_form = VisitForm(request.POST)
-        if visit_form.is_valid():
+        form = VisitForm(request.POST)
+        if form.is_valid():
             visit = Visit
             try:
-                visit = Visit.objects.get(id=visit_form.cleaned_data['id'])
+                visit = Visit.objects.get(id=form.cleaned_data['id'])
             except visit.DoesNotExist:
                 return redirect('/visits/')
-            visit.from_date = visit_form.cleaned_data['from_date']
-            visit.to_date = visit_form.cleaned_data['to_date']
-            visit.client = visit_form.cleaned_data['client']
-            visit.pet = visit_form.cleaned_data['pet']
-            visit.problem = visit_form.cleaned_data['problem']
-            visit.description = visit_form.cleaned_data['description']
+            visit.from_date = form.cleaned_data['from_date']
+            visit.to_date = form.cleaned_data['to_date']
+            visit.client = form.cleaned_data['client']
+            visit.pet = form.cleaned_data['pet']
+            visit.problem = form.cleaned_data['problem']
+            visit.description = form.cleaned_data['description']
             visit.appointment_by = User.objects.get(
-                id=visit_form.cleaned_data['appointment_by'].id
+                id=form.cleaned_data['appointment_by'].id
             )
             visit.appointment_to = User.objects.get(
-                id=visit_form.cleaned_data['appointment_to'].id
+                id=form.cleaned_data['appointment_to'].id
             )
             visit.save()
             return redirect('/visits/')
         else:
             return render(request, "planner/visits/edit.html", {
-                'visit_form': visit_form,
-                'visit_edit_id': visit_edit_id,
+                'form': form,
+                'edit_id': edit_id,
                 'is_register': request.user.groups.filter(name='Registers'),
             })
 
-    if visit_remove_id:
-        visit = Visit.objects.get(id=visit_remove_id)
+    if remove_id:
+        visit = Visit.objects.get(id=remove_id)
         visit.delete()
         return redirect('/visits/')
-    elif visit_edit_id:
-        visit = Visit.objects.get(id=visit_edit_id)
-        visit_form = VisitForm(initial={
+    elif edit_id:
+        visit = Visit.objects.get(id=edit_id)
+        form = VisitForm(initial={
             'id': visit.id,
             'from_date': visit.from_date,
             'to_date': visit.to_date,
@@ -415,11 +462,11 @@ def visits(request, visit_edit_id=None, visit_remove_id=None):
             'appointment_by': visit.appointment_by,
             'appointment_to': visit.appointment_to
         })
-        visit_form.helper.form_action = '/visits/'
-        visit_form.helper.form_id = 'visit-edit-form'
+        form.helper.form_action = '/visits/'
+        form.helper.form_id = 'visit-edit-form'
         return render(request, "planner/visits/edit.html", {
-            'visit_form': visit_form,
-            'visit_edit_id': visit_edit_id,
+            'form': form,
+            'edit_id': edit_id,
             'is_register': request.user.groups.filter(name='Registers'),
         })
 
@@ -439,7 +486,7 @@ def visits(request, visit_edit_id=None, visit_remove_id=None):
         'active': 'visits',
         'is_register': request.user.groups.filter(name='Registers'),
         'visits': visits,
-        'visit_form': VisitForm(initial={
+        'form': VisitForm(initial={
             'appointment_by': Profile.objects.get(
                 user__username=request.user
             ).id

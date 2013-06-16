@@ -1,6 +1,6 @@
-$(document).ready(function(){
+$(document).ready(function() {
 
-    $("#client-add-form").submit(function(){ // Catching the form submit
+    $("#client-add-form").submit(function() { // Catching the form submit
         $.ajax({
             contentType: 'application/json',
             data: JSON.stringify($(this).serializeObject()),
@@ -116,6 +116,31 @@ $(document).ready(function(){
         });
         return false;
     });
+
+    $("#client-edit-form #button-id-cancel").on('click', function() {
+        window.location.href = location.href.split('edit')[0];
+    });
+
+    $("#pet-edit-form #button-id-cancel").on('click', function() {
+        window.location.href = location.href.split('edit')[0];
+    });
+
+    $("#visit-edit-form #button-id-cancel").on('click', function() {
+        window.location.href = location.href.split('edit')[0];
+    });
+
+    $("#doctor-edit-form #button-id-cancel").on('click', function() {
+        window.location.href = location.href.split('edit')[0];
+    });
+
+    $("#problem-edit-form #button-id-cancel").on('click', function() {
+        window.location.href = location.href.split('edit')[0];
+    });
+
+    $("#schedule-edit-form #button-id-cancel").on('click', function() {
+        window.location.href = location.href.split('edit')[0];
+    });
+
 });
 
 $.fn.serializeObject = function(){

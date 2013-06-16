@@ -15,33 +15,33 @@ urlpatterns = patterns(
 
     # Visits
     url(r'^visits/$', 'planner.views.visits'),
-    url(r'^visits/edit/(?P<visit_edit_id>\d+)/', 'planner.views.visits'),
-    url(r'^visits/remove/(?P<visit_remove_id>\d+)/', 'planner.views.visits'),
+    url(r'^visits/edit/(?P<edit_id>\d+)/', 'planner.views.visits'),
+    url(r'^visits/remove/(?P<remove_id>\d+)/', 'planner.views.visits'),
 
     # Clients
     url(r'^clients/$', 'planner.views.clients'),
-    url(r'^clients/edit/(?P<client_edit_id>\d+)/', 'planner.views.clients'),
-    url(r'^clients/remove/(?P<client_remove_id>\d+)/', 'planner.views.clients'),
+    url(r'^clients/edit/(?P<edit_id>\d+)/', 'planner.views.clients'),
+    url(r'^clients/remove/(?P<remove_id>\d+)/', 'planner.views.clients'),
 
     # Pets
     url(r'^pets/$', 'planner.views.pets'),
-    url(r'^pets/edit/(?P<pet_edit_id>\d+)/', 'planner.views.pets'),
-    url(r'^pets/remove/(?P<pet_remove_id>\d+)/', 'planner.views.pets'),
+    url(r'^pets/edit/(?P<edit_id>\d+)/', 'planner.views.pets'),
+    url(r'^pets/remove/(?P<remove_id>\d+)/', 'planner.views.pets'),
 
     # Doctors
     url(r'^profiles/$', 'accounts.views.profiles'),
-    url(r'^profiles/edit/(?P<profile_edit_id>\d+)', 'accounts.views.profiles'),
-    url(r'^profiles/remove/(?P<profile_remove_id>\d+)', 'accounts.views.profiles'),
+    url(r'^profiles/edit/(?P<edit_id>\d+)', 'accounts.views.profiles'),
+    url(r'^profiles/remove/(?P<remove_id>\d+)', 'accounts.views.profiles'),
 
     # Schedules
     url(r'^schedules/$', 'planner.views.schedules'),
-    url(r'^schedules/edit/(?P<doctor_edit_id>\d+)', 'planner.views.schedules'),
-    url(r'^schedules/remove/(?P<doctor_remove_id>\d+)', 'planner.views.schedules'),
+    url(r'^schedules/edit/(?P<edit_id>\d+)', 'planner.views.schedules'),
+    url(r'^schedules/remove/(?P<remove_id>\d+)', 'planner.views.schedules'),
 
     # Problem
     url(r'^problems/$', 'planner.views.problems'),
-    url(r'^problems/edit/(?P<problem_edit_id>\d+)/', 'planner.views.problems'),
-    url(r'^problems/remove/(?P<problem_remove_id>\d+)/', 'planner.views.problems'),
+    url(r'^problems/edit/(?P<edit_id>\d+)/', 'planner.views.problems'),
+    url(r'^problems/remove/(?P<remove_id>\d+)/', 'planner.views.problems'),
 
     # Accounts
     url(r'^accounts/login/$', 'accounts.views.account_login'),

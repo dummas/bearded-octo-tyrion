@@ -80,7 +80,7 @@ class Schedule(models.Model):
     def edit_url(self):
         return "/schedules/edit/" + str(self.id)
 
-    def detele_url(self):
+    def delete_url(self):
         return "/schedules/remove/" + str(self.id)
 
 

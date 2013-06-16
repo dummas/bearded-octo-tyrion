@@ -51,27 +51,27 @@ def account_logout(request):
 
 
 @login_required
-def profiles(request, profile_edit_id=None, profile_remove_id=None):
+def profiles(request, edit_id=None, remove_id=None):
     """
     The doctors view
     """
 
-    if profile_remove_id:
-        profile = Profile.objects.get(id=profile_remove_id)
+    if remove_id:
+        profile = Profile.objects.get(id=remove_id)
         profile.delete()
         return redirect('/accounts/')
-    elif profile_edit_id:
-        profile = Profile.objects.get(id=profile_edit_id)
-        profile_form = ProfileForm(initial={
+    elif edit_id:
+        profile = Profile.objects.get(id=edit_id)
+        form = ProfileForm(initial={
             'id': profile.id,
             'username': profile.user.username,
             'email': profile.user.email
         })
-        profile_form.helper.form_action = '/accounts/'
-        profile_form.helper.form_id = 'account-edit-form'
+        form.helper.form_action = '/accounts/'
+        form.helper.form_id = 'account-edit-form'
         return render(request, "planner/profiles/edit.html", {
-            'profile_form': profile_form,
-            'profile_edit_id': profile_edit_id,
+            'form': form,
+            'edit_id': edit_id,
             'is_register': request.user.groups.filter(name='Registers'),
         })
 
@@ -88,8 +88,8 @@ def profiles(request, profile_edit_id=None, profile_remove_id=None):
 
     return render(request, "planner/profiles/index.html", {
         'title': 'Doctors',
-        'active': 'Doctors',
+        'active': 'doctors',
         'is_register': request.user.groups.filter(name='Registers'),
         'profiles': profiles,
-        'profile_form': ProfileForm
+        'form': ProfileForm
     })
