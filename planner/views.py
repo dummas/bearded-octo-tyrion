@@ -15,6 +15,7 @@ from planner.forms import VisitForm
 from planner.forms import ScheduleForm
 from planner import urls
 from planner.utils import sliced_time
+from planner.utils import days_of_the_week
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
@@ -92,18 +93,24 @@ def index(request, view=None, days=None, weeks=None, months=None):
     """
     Current week operations
     """
-    week_calendar = []
-    for week in month_calendar:
-        if current_date.day in week:
-            week_calendar = week[:]
+    week_calendar = days_of_the_week(current_date.year, current_date.isocalendar()[1])
+    # for week in month_calendar:
+    #     if current_date.day in week:
+    #         week_calendar = week[:]
 
-    for i, day in enumerate(week_calendar):
-        if day != 0:
-            week_calendar[i] = timezone.datetime(
-                year=current_date.year,
-                month=current_date.month,
-                day=week_calendar[i]
-            )
+    # print week_calendar
+
+    # for i, day in enumerate(week_calendar):
+    #     if day != 0:
+    #         """
+    #         Situation, then we have the date defined
+    #         """
+    #         week_calendar[i] = timezone.datetime(
+    #             year=current_date.year,
+    #             month=current_date.month,
+    #             day=week_calendar[i]
+    #         )
+
 
     """
     Making calendar information more use-full

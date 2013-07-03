@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from datetime import date
 
 
 def perdelta(start, end, delta):
@@ -8,6 +9,23 @@ def perdelta(start, end, delta):
         yield curr
         curr += delta
 
+def week_boundaries(year, week):
+    startOfYear = date(year, 1, 1)
+    week0 = startOfYear - timedelta(days=startOfYear.isoweekday(),weeks=1)
+    sun = week0 + timedelta(weeks=week,days=1)
+    sat = sun + timedelta(days=7)
+    return sun, sat
+
+def daterange(start_date, end_date):
+    for n in range(int ((end_date - start_date).days)):
+        yield start_date + timedelta(n)
+
+def days_of_the_week(year, week):
+    start, end = week_boundaries(year, week)
+    result_list = []
+    for date_entry in daterange(start, end):
+        result_list.append(date_entry)
+    return result_list
 
 def sliced_time(
     start_hour=None,

@@ -116,6 +116,9 @@ $(document).ready(function() {
             date = element.getAttribute('data-date');
             if (date !== null) {
                 timestamp_date = new Date(date).getTime();
+                if (timestamp_date === null) {
+                    return;
+                }
                 $.getJSON('/api/visits/' + timestamp_date + '/', function(data) {
                     length = data.length;
                     if (length > 0) {
