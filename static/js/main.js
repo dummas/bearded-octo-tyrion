@@ -44,7 +44,6 @@ $(document).ready(function() {
      * If the current system date exists
      */
     if (current_view == 'days') {
-        console.log('Days view');
         // Vertical line is used to indicate the current time
         load_vertical_line();
         // Loading visits on particular date
@@ -121,6 +120,7 @@ $(document).ready(function() {
                     length = data.length;
                     if (length > 0) {
                         for (i=0; i < length; i++) {
+
                             sticker_id = "sticker-" + data[i].id;
                             // Visit start and visit end proper parsing
                             visit_end = new Date(Date.parse(data[i].to_date));
@@ -135,7 +135,20 @@ $(document).ready(function() {
                             bottom_gap = (spacing_tr[1].offsetHeight) * (Math.ceil(time_diff_end / (1000 * 60 * 15)));
                             top = $(rows.cells[index]).position().top + top_gap + 2 - 35;
                             left = $(rows.cells[index]).position().left + spacing_td[1].offsetWidth/2 - element_width/2 - 5;
-                            console.log(spacing_tr[1].offsetHeight, (Math.ceil(time_diff / (1000 * 60 * 15))));
+
+                            /**
+                             * Loop throught all the existsing stickers
+                             */
+                            $(".sticker").each(function(index, element) {
+                                sticker_from_date = element.getAttribute('data-from-date');
+                                sticker_to_date = element.getAttribute('data-to-date');
+                                if (sticker_from_date == data[i].from_date) {
+                                    element_width = element_width / 2;
+                                    // top = top + 15;
+                                    left = left + element_width + 11;
+                                    element.style.width = element_width + 'px';
+                                }
+                            });
 
                             element = template
                                 .replace('{#time}', format_time(new Date(data[i].from_date)) + ' - ' + format_time(new Date(data[i].to_date)))
@@ -156,7 +169,6 @@ $(document).ready(function() {
                                 .replace('{#data-appointment-to}', data[i].appointment_to.id)
                                 .replace('{#data-appointment-by}', data[i].appointment_by.id);
 
-                            console.log('Docking');
                             $('.sticky-dock').append(element);
                         }
                     }
@@ -263,7 +275,6 @@ $(document).ready(function() {
         var appointment_by = [];
         $('.sticker, .month-sticker').each(function(index) {
             $(this).click(function(event) {
-                console.log(event);
                 /**
                  * Collect the data
                  */
@@ -404,7 +415,6 @@ $(document).ready(function() {
         $.get('/api/pets/' + client_id + '/')
         .done(function(data) {
             $.each(data, function() {
-                console.log(this);
                 options.append($('<option />').val(this.id).text(this.name));
             });
         });
