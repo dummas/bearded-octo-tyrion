@@ -7,6 +7,9 @@ class ProfileManager(models.Manager):
     """
     Profile manager
     """
+    def get_query_set(self):
+        return super(ProfileManager, self).get_query_set().filter(active=True)
+
     def are_doctors(self):
         """
         Profile filter, returning doctors only
@@ -27,7 +30,18 @@ class Profile(models.Model):
     """
 
     user = models.OneToOneField(User)
+    active = models.BooleanField(
+        default=True,
+        editable=False
+    )
     objects = ProfileManager()
+
+    def delete(self, *args, **kwargs):
+        """
+        Implementing soft delete
+        """
+        self.active = False
+        self.save()
 
     def __unicode__(self):
         """

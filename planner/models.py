@@ -228,18 +228,6 @@ class VisitManager(models.Manager):
             from_date__gte=today_midnight,
             from_date__lte=tomorow_midnight
         )
-        # ).values(
-        #     'description',
-        #     'appointment_to',
-        #     'appointment_by',
-        #     'client',
-        #     'pet',
-        #     'from_date',
-        #     'to_date',
-        #     'problem__color',
-        #     'problem',
-        #     'id'
-        # )
 
         return visits
 

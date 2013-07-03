@@ -56,16 +56,6 @@ $(document).ready(function() {
     }
 
     /**
-     * Checking then the client field has changed
-     * 
-     * @return {[type]} [description]
-     */
-    // $("#id_client").change(function() {
-    //     var client_id = $(this).val();
-    //     load_pets(client_id);
-    // });
-
-    /**
      * Date picker part
      */
     $("#div_id_from_date .controls .input-append").datetimepicker({
@@ -380,7 +370,7 @@ $(document).ready(function() {
                     element = template
                         .replace('{#time}', format_time(new Date(data[i].from_date)) + ' - ' + format_time(new Date(data[i].to_date)))
                         .replace('{#sticker-id}', sticker_id)
-                        .replace('{#content}', data[i].description)
+                        .replace('{#content}', data[i].pet.name + ', ' + data[i].description)
                         .replace('{#top}', top)
                         .replace('{#left}', left)
                         .replace('{#height}', element_height)

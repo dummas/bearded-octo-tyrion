@@ -29,13 +29,29 @@ class Command(BaseCommand):
         foo1 = User.objects.create_user(
             'foo1',
             'foo1@gmail.com',
-            'brokenwing')
-        foo1.groups.add(registers_group)
-        foo1.is_staff = True
+            'bar1')
+        foo1.groups.add(doctors_group)
+        foo1.is_staff = False
         foo1.save()
+        foo2 = User.objects.create_user(
+            'foo2',
+            'foo1@gmail.com',
+            'bar2')
+        foo2.groups.add(doctors_group)
+        foo2.is_staff = False
+        foo2.save()
+        foo3 = User.objects.create_user(
+            'foo3',
+            'foo1@gmail.com',
+            'bar3')
+        foo3.groups.add(doctors_group)
+        foo3.is_staff = False
+        foo3.save()
+
         bar1 = User.objects.create_user(
             'bar1',
             'bar1@gmail.com',
             'brokenwing')
-        bar1.groups.add(doctors_group)
-        bar1.is_staff = False
+        bar1.groups.add(registers_group)
+        bar1.is_staff = True
+        bar1.save()

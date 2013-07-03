@@ -59,7 +59,7 @@ def profiles(request, edit_id=None, remove_id=None):
     if remove_id:
         profile = Profile.objects.get(id=remove_id)
         profile.delete()
-        return redirect('/accounts/')
+        return redirect('/profiles/')
     elif edit_id:
         profile = Profile.objects.get(id=edit_id)
         form = ProfileForm(initial={
@@ -67,8 +67,8 @@ def profiles(request, edit_id=None, remove_id=None):
             'username': profile.user.username,
             'email': profile.user.email
         })
-        form.helper.form_action = '/accounts/'
-        form.helper.form_id = 'account-edit-form'
+        form.helper.form_action = '/profiles/'
+        form.helper.form_id = 'doctor-edit-form'
         return render(request, "planner/profiles/edit.html", {
             'form': form,
             'edit_id': edit_id,

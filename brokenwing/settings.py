@@ -130,7 +130,8 @@ INSTALLED_APPS = (
     'bootstrapform',
     'accounts',
     'planner',
-    'crispy_forms'
+    'crispy_forms',
+    'south'
 )
 
 # A sample logging configuration. The only tangible logging
@@ -169,3 +170,4 @@ LOGIN_URL = '/accounts/login/'
 AUTH_PROFILE_MODULE = 'accounts.Profile'
 CRISPY_TEMPLATE_PACK = 'bootstrap'
 CRISPY_FAIL_SILENTLY = not DEBUG
+USE_TZ = True

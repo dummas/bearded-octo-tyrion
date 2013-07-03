@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.contrib.auth.models import Group
 from piston.handler import BaseHandler
 from piston.utils import rc
 from planner.models import Client
@@ -26,11 +27,21 @@ class ProfileHandler(BaseHandler):
                 User.objects.get(username=data['username'])
                 return rc.DUPLICATE_ENTRY
             except User.DoesNotExist:
-                User.objects.create_user(
+                if data['password1'] == data['password2']:
+                    data['password'] = data['password1']
+                else:
+                    return rc.NOT_FOUND
+
+                doctors_group = Group.objects.get(name='Doctors')
+                profile = User.objects.create_user(
                     data['username'],
                     data['email'],
                     data['password']
                 )
+                profile.groups.add(doctors_group)
+                profile.is_staff = False
+                profile.save()
+
                 return rc.CREATED
 
         else:
