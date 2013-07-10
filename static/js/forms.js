@@ -97,6 +97,7 @@ $(document).ready(function() {
         });
         return false;
     });
+    
     $("#schedule-add-form").submit(function() {
         $.ajax({
             contentType: 'application/json',
