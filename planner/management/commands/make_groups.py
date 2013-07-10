@@ -6,7 +6,7 @@ from django.contrib.auth.models import Permission
 
 class Command(BaseCommand):
     args = ''
-    help = 'Closes the specified poll for voting'
+    help = 'Making groups happen'
 
     def handle(self, *args, **options):
         print 'Creating groups'
