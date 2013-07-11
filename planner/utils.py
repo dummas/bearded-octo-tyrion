@@ -44,7 +44,7 @@ def sliced_time(
     if start_hour is None:
         start_hour = 8
     if end_hour is None:
-        end_hour = 18
+        end_hour = 22
     if slice_hour is None:
         slice_hour = (end_hour-start_hour)*4
 
