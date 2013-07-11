@@ -261,17 +261,18 @@ def create_testuser(app, created_models, verbosity, **kwargs):
     """
     Create fast user automatically
     """
-    try:
-        auth_models.User.objects.get(username='mamunt')
-    except auth_models.User.DoesNotExist:
-        print 'Creating superuser, login: mamunt, password: pHecAS7s'
-        assert auth_models.User.objects.create_superuser(
-            'mamunt',
-            'm.norkin@gmail.com',
-            'pHecAS7s'
-        )
-    else:
-        print 'Test user already exists'
+    pass
+    # try:
+    #     auth_models.User.objects.get(username='mamunt')
+    # except auth_models.User.DoesNotExist:
+    #     print 'Creating superuser, login: mamunt, password: pHecAS7s'
+    #     assert auth_models.User.objects.create_superuser(
+    #         'mamunt',
+    #         'm.norkin@gmail.com',
+    #         'pHecAS7s'
+    #     )
+    # else:
+    #     print 'Test user already exists'
 
 
 signals.post_syncdb.connect(
