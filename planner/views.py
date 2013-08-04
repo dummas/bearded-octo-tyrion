@@ -250,7 +250,7 @@ def schedules(request, edit_id=None, remove_id=None):
             schedule = Schedule
             try:
                 schedule = Schedule.objects.get(id=edit_id)
-            except schedule.DoesNotExists:
+            except schedule.DoesNotExist:
                 return redirect('/schedules/')
             # Add the fields
             schedule.save()
