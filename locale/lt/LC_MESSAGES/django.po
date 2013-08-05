@@ -1,0 +1,31 @@
+#: templates/base.html:26 templates/base.html.py:48
+msgid "Overview"
+msgstr "Peržiūra"
+
+#: templates/base.html:29
+msgid "Visits"
+msgstr "Apsilankymai"
+
+#: templates/base.html:32
+msgid "Clients"
+msgstr "Klientai"
+
+#: templates/base.html:35
+msgid "Pets"
+msgstr "Gyvūnai"
+
+#: templates/base.html:38
+msgid "Doctors"
+msgstr "Daktarai"
+
+#: templates/base.html:41
+msgid "Schedules"
+msgstr "Darbo grafikas"
+
+#: templates/base.html:44
+msgid "Problems"
+msgstr "Problemos"
+
+#: templates/base.html:53
+msgid "Logout"
+msgstr "Atsijungti"

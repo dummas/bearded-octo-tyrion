@@ -93,23 +93,10 @@ def index(request, view=None, days=None, weeks=None, months=None):
     """
     Current week operations
     """
-    week_calendar = days_of_the_week(current_date.year, current_date.isocalendar()[1])
-    # for week in month_calendar:
-    #     if current_date.day in week:
-    #         week_calendar = week[:]
-
-    # print week_calendar
-
-    # for i, day in enumerate(week_calendar):
-    #     if day != 0:
-    #         """
-    #         Situation, then we have the date defined
-    #         """
-    #         week_calendar[i] = timezone.datetime(
-    #             year=current_date.year,
-    #             month=current_date.month,
-    #             day=week_calendar[i]
-    #         )
+    week_calendar = days_of_the_week(
+        current_date.year, 
+        current_date.isocalendar()[1]
+    )
 
 
     """
@@ -179,7 +166,7 @@ def clients(request, edit_id=None, remove_id=None):
             client = Client
             try:
                 client = Client.objects.get(id=edit_id)
-            except client.DoesNotExists:
+            except client.DoesNotExist:
                 return redirect('/clients/')
 
             client.first_name = form.cleaned_data['first_name']
@@ -204,7 +191,7 @@ def clients(request, edit_id=None, remove_id=None):
         form = ClientForm(
             Client.objects.values().get(id=edit_id)
         )
-        form.helper.form_action = '/clients/'
+        form.helper.form_action = '/clients/edit/' + edit_id + '/'
         form.helper.form_id = 'client-edit-form'
         return render(request, "planner/clients/edit.html", {
             'form': form,
@@ -273,7 +260,7 @@ def schedules(request, edit_id=None, remove_id=None):
             'start': schedule.start,
             'end': schedule.end
         })
-        form.helper.form_action = '/schedules/'
+        form.helper.form_action = '/schedules/edit/' + edit_id + "/"
         form.helper.form_id = 'schedule-edit-form'
         return render(request, "planner/schedules/edit.html", {
             'form': form,
@@ -309,7 +296,9 @@ def pets(request, edit_id=None, remove_id=None):
             pet = Pet
             try:
                 pet = Pet.objects.get(id=edit_id)
-            except pet.DoesNotExists:
+            except pet.DoesNotExist:
+                print "Pet does not exist"
+                print edit_id
                 return redirect('/pets/')
 
             pet.name = form.cleaned_data['name']
@@ -332,7 +321,7 @@ def pets(request, edit_id=None, remove_id=None):
             'name': pet.name,
             'client': pet.client
         })
-        form.helper.form_action = '/pets/'
+        form.helper.form_action = '/pets/edit/' + edit_id + '/'
         form.helper.form_id = 'pet-edit-form'
         return render(request, "planner/pets/edit.html", {
             'form': form,
@@ -369,7 +358,7 @@ def problems(request, edit_id=None, remove_id=None):
             problem = Problem
             try:
                 problem = Problem.objects.get(id=edit_id)
-            except problem.DoesNotExists:
+            except problem.DoesNotExist:
                 return redirect('/problems/')
 
             problem.name = form.cleaned_data['name']
@@ -392,7 +381,7 @@ def problems(request, edit_id=None, remove_id=None):
         form = ProblemForm(
             Problem.objects.values().get(id=edit_id)
         )
-        form.helper.form_action = '/problems/'
+        form.helper.form_action = '/problems/edit/' + edit_id + '/'
         form.helper.form_id = 'problem-edit-form'
         return render(request, "planner/problems/edit.html", {
             'form': form,
@@ -469,7 +458,7 @@ def visits(request, edit_id=None, remove_id=None):
             'appointment_by': visit.appointment_by,
             'appointment_to': visit.appointment_to
         })
-        form.helper.form_action = '/visits/'
+        form.helper.form_action = '/visits/edit/' + edit_id + '/'
         form.helper.form_id = 'visit-edit-form'
         return render(request, "planner/visits/edit.html", {
             'form': form,

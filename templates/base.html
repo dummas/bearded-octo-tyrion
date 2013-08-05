@@ -13,7 +13,9 @@
         <link rel="stylesheet" type="text/css" href="/static/css/bootstrap-table.css">
     </head>
     <body>
-        
+        {% load i18n %}
+        {% get_current_language as LANGUAGE_CODE %}
+        <!-- Current language: {{ LANGUAGE_CODE }} -->
         <div class="container">
             <div class="masthead">
                 <!-- <h3 class="muted">Brokenwing</h3> -->
@@ -23,34 +25,34 @@
                             <ul class="nav">
                                 {% if is_register %}
                                 <li {% if active == "overview" %}class="active"{% endif %}>
-                                    <a href="/">Overview</a>
+                                    <a href="/">{% trans "Pagrindinis" %}</a>
                                 </li>
                                 <li {% if active == "visits" %}class="active"{% endif %}>
-                                    <a href="/visits/">Visits</a>
+                                    <a href="/visits/">{% trans "Apsilankymai" %}</a>
                                 </li>
                                 <li {% if active == "clients" %}class="active"{% endif %}>
-                                    <a href="/clients/">Clients</a>
+                                    <a href="/clients/">{% trans "Klientai" %}</a>
                                 </li>
                                 <li {% if active == "pets" %}class="active"{% endif %}>
-                                    <a href="/pets/">Pets</a>
+                                    <a href="/pets/">{% trans "Pacientai" %}</a>
                                 </li>
                                 <li {% if active == "profiles" %}class="active"{% endif %}>
-                                    <a href="/profiles/">Doctors</a>
+                                    <a href="/profiles/">{% trans "Daktarai" %}</a>
                                 </li>
                                 <li {% if active == "schedules" %}class="active"{% endif %}>
-                                    <a href="/schedules/">Schedules</a>
+                                    <a href="/schedules/">{% trans "Darbo tvarkaraštis" %}</a>
                                 </li>
                                 <li {% if active == "problems" %}class="active"{% endif %}>
-                                    <a href="/problems/">Problems</a>
+                                    <a href="/problems/">{% trans "Problemos" %}</a>
                                 </li>
                                 {% else %}
                                 <li {% if active == "overview" %}class="active"{% endif %}>
-                                    <a href="/">Overview</a>
+                                    <a href="/">{% trans "Pagrindinis" %}</a>
                                 </li>
                                 {% endif %}
                             </ul>
                             <ul class="nav pull-right">
-                                <li><a href="/accounts/logout/">Logout</a></li>
+                                <li><a href="/accounts/logout/">{% trans "Atsijungti" %}</a></li>
                             </ul>
                             {% block secondary_menu %}{% endblock %}
                         </div>
@@ -61,7 +63,7 @@
             {% block content %}{% endblock %}
             <hr>
             <footer id="footer">
-                <p>&copy; NORK {% now "Y" %}</p>
+                <p>&copy; Maksim Norkin {% now "Y" %}</p>
             </footer>
         </div><!-- /.container -->
     </body>

@@ -106,7 +106,7 @@ class ClientManager(models.Manager):
     """
     Client Manager
     """
-    def find_or_create(self, full_name=None):
+    def find_or_create(self, full_name=None, telephone=None):
         """
         Searching for the client by full_name
 
@@ -118,15 +118,20 @@ class ClientManager(models.Manager):
         last_name = full_name.split()[1]
 
         client = Client
+
+        print telephone
+
         try:
             client = Client.objects.get(
                 first_name=first_name,
-                last_name=last_name
+                last_name=last_name,
+                telephone=telephone
             )
         except client.DoesNotExist:
             client = Client(
                 first_name=first_name,
-                last_name=last_name
+                last_name=last_name,
+                telephone=telephone
             )
             client.save()
 

@@ -7,7 +7,7 @@
 <table class="table table-bordered table-hover table-visit" id="table-visit">
     <thead>
         <tr>
-            <th width="5%">Hours</th>
+            <th width="5%">Laikas</th>
             {% for doctor in works_today %}
             <th id="doctor-{{doctor.profile_id}}">{{doctor.profile__user__username}}</th>
             {% endfor %}

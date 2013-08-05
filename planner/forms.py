@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django import forms
 from django.forms.util import ErrorDict
 from django.forms.forms import NON_FIELD_ERRORS
@@ -21,12 +22,18 @@ class SinginForm(forms.Form):
     The sing in form
     """
     username = forms.CharField(
-        max_length=200)
+        max_length=200,
+        label='Naudotojas'
+    )
     password = forms.CharField(
         max_length=200,
+        label='Slaptažodis',
         widget=forms.PasswordInput
     )
-    remember_me = forms.BooleanField(required=False)
+    remember_me = forms.BooleanField(
+        required=False,
+        label='Prisiminti mane'
+    )
 
     def add_form_error(self, message):
         if not self._errors:
@@ -41,15 +48,18 @@ class ScheduleForm(forms.Form):
     Schedule Management form
     """
     profile = forms.ModelChoiceField(
-        queryset=Profile.objects.are_doctors()
+        queryset=Profile.objects.are_doctors(),
+        label="Gydytojas"
     )
 
     start = forms.CharField(
-        max_length=200
+        max_length=200,
+        label="Nuo"
     )
 
     end = forms.CharField(
-        max_length=200
+        max_length=200,
+        label="Iki"
     )
 
     def __init__(self, *args, **kwargs):
@@ -81,8 +91,8 @@ class ScheduleForm(forms.Form):
                 css_class='row-fluid'
             ),
             FormActions(
-                Submit('save', 'Save changes'),
-                Button('cancel', 'Cancel', css_class='btn', data_dismiss='modal')
+                Submit('save', 'Saugoti'),
+                Button('cancel', 'Atgal', css_class='btn', data_dismiss='modal')
             )
         )
         super(ScheduleForm, self).__init__(*args, **kwargs)
@@ -93,13 +103,16 @@ class ClientForm(forms.Form):
     Client add form
     """
     first_name = forms.CharField(
-        max_length=200
+        max_length=200,
+        label='Vardas'
     )
     last_name = forms.CharField(
-        max_length=200
+        max_length=200,
+        label='Pavardė'
     )
     telephone = forms.CharField(
-        max_length=200
+        max_length=200,
+        label='Telefonas'
     )
 
     def __init__(self, *args, **kwargs):
@@ -126,8 +139,8 @@ class ClientForm(forms.Form):
                 css_class='row-fluid'
             ),
             FormActions(
-                Submit('save', 'Save changes'),
-                Button('cancel', 'Cancel', css_class='btn', data_dismiss='modal')
+                Submit('save', 'Saugoti'),
+                Button('cancel', 'Atgal', css_class='btn', data_dismiss='modal')
             ),
         )
         super(ClientForm, self).__init__(*args, **kwargs)
@@ -138,10 +151,12 @@ class PetForm(forms.Form):
     Pet form
     """
     client = forms.ModelChoiceField(
-        queryset=Client.objects.all()
+        queryset=Client.objects.all(),
+        label="Klientas"
     )
     name = forms.CharField(
-        max_length=200
+        max_length=200,
+        label="Vardas"
     )
 
     def __init__(self, *args, **kwargs):
@@ -161,8 +176,8 @@ class PetForm(forms.Form):
                 css_class='row-fluid'
             ),
             FormActions(
-                Submit('save', 'Save changes'),
-                Button('cancel', 'Cancel', css_class='btn', data_dismiss='modal')
+                Submit('save', 'Saugoti'),
+                Button('cancel', 'Atgal', css_class='btn', data_dismiss='modal')
             )
         )
         super(PetForm, self).__init__(*args, **kwargs)
@@ -174,15 +189,15 @@ class ProblemForm(forms.Form):
     """
     name = forms.CharField(
         max_length=200,
-        help_text='General name of problem'
+        label="Pavadinimas"
     )
     code = forms.CharField(
         max_length=200,
-        help_text='Problem code name'
+        label="Kodas"
     )
     color = forms.CharField(
         max_length=200,
-        help_text='Problem color code'
+        label="Spalvos kodas"
     )
 
     def __init__(self, *args, **kwargs):
@@ -208,8 +223,8 @@ class ProblemForm(forms.Form):
                 ),
             ),
             FormActions(
-                Submit('save', 'Save changes'),
-                Button('cancel', 'Cancel', css_class='btn', data_dismiss='modal')
+                Submit('save', 'Saugoti'),
+                Button('cancel', 'Atgal', css_class='btn', data_dismiss='modal')
             )
         )
         super(ProblemForm, self).__init__(*args, **kwargs)
@@ -222,34 +237,45 @@ class VisitForm(forms.Form):
 
     id = forms.CharField(
     )
-
     from_date = forms.DateTimeField(
+        label="Nuo"
     )
     to_date = forms.DateTimeField(
+        label="Iki"
     )
     problem = forms.ModelChoiceField(
-        queryset=Problem.objects.all()
+        queryset=Problem.objects.all(),
+        label="Problema"
     )
     description = forms.CharField(
-        widget=forms.Textarea
+        widget=forms.Textarea,
+        label="Apibūdinimas"
     )
     # client = forms.ModelChoiceField(
     #     queryset=Client.objects.all()
     # )
     client = forms.CharField(
-        max_length=200
+        max_length=200,
+        label="Klientas"
+    )
+    telephone = forms.CharField(
+        max_length=200,
+        label="Telefonas"
     )
     # pet = forms.ModelChoiceField(
     #     queryset=Pet.objects.all()
     # )
     pet = forms.CharField(
-        max_length=200
+        max_length=200,
+        label="Pacientas"
     )
     appointment_to = forms.ModelChoiceField(
-        queryset=Profile.objects.are_doctors()
+        queryset=Profile.objects.are_doctors(),
+        label="Gydytojas"
     )
     appointment_by = forms.ModelChoiceField(
-        queryset=Profile.objects.are_registers()
+        queryset=Profile.objects.are_registers(),
+        label="Priskyrė"
     )
 
     def __init__(self, *args, **kwargs):
@@ -283,14 +309,22 @@ class VisitForm(forms.Form):
                     css_class='span6'
                 ),
                 Div(
-                    'pet',
+                    AppendedText(
+                        'telephone',
+                        '<i data-time-icon="icon-retweet"></i>'
+                    ),
                     css_class='span6'
                 ),
                 css_class='row-fluid'
             ),
             Div(
                 Div(
-                    'problem',
+                    Div(
+                        'pet',
+                    ),
+                    Div(
+                        'problem'
+                    ),
                     css_class='span6'
                 ),
                 Div(
@@ -317,8 +351,8 @@ class VisitForm(forms.Form):
                 css_class='row-fluid'
             ),
             FormActions(
-                Submit('save', 'Save changes'),
-                Button('cancel', 'Cancel', css_class='btn', data_dismiss='modal'),
+                Submit('save', 'Saugoti'),
+                Button('cancel', 'Atgal', css_class='btn', data_dismiss='modal'),
             ),
         )
         super(VisitForm, self).__init__(*args, **kwargs)

@@ -181,6 +181,7 @@ class VisitHandler(BaseHandler):
         'from_date',
         'to_date',
         'client',
+        'telephone',
         'client_id',
         'pet',
         'pet_id',
@@ -214,7 +215,8 @@ class VisitHandler(BaseHandler):
                 pet=Pet.objects.find_or_create(
                     name=data['pet'],
                     client=Client.objects.find_or_create(
-                        full_name=data['client']
+                        full_name=data['client'],
+                        telephone=data['telephone']
                     )
                 ),
                 appointment_to=User.objects.get(
@@ -233,6 +235,8 @@ class VisitHandler(BaseHandler):
         if request.content_type:
             data = request.data
 
+            print data
+
             visit = Visit
 
             try:
@@ -247,12 +251,14 @@ class VisitHandler(BaseHandler):
             )
             visit.description = data['description']
             visit.client = Client.objects.find_or_create(
-                full_name=data['client']
+                full_name=data['client'],
+                telephone=data['telephone']
             )
             visit.pet = Pet.objects.find_or_create(
                 name=data['pet'],
                 client=Client.objects.find_or_create(
-                    full_name=data['client']
+                    full_name=data['client'],
+                    telephone=data['telephone']
                 )
             )
             visit.appointment_to = User.objects.get(

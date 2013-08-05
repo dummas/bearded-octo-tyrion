@@ -254,6 +254,10 @@ $(document).ready(function() {
         var time_diff = Math.abs(work_start_time - new Date().getTime());
         var top_gap = (spacing_tr[1].offsetHeight) * (Math.ceil(time_diff / (1000 * 60 * 15)));
         top_gap = top_gap + $('table.table').offset().top;
+        debugger;
+        if (top_gap > $('table.table').height()) {
+            top_gap = $('table.table').height() + $('table.table').offset().top - 20;
+        }
 
         var vertical_line = "<hr class='current_time' style='width: " +
             spacing_tr.width() + "px; " +
@@ -271,6 +275,7 @@ $(document).ready(function() {
         var from_date = [];
         var to_date = [];
         var client = [];
+        var telephone = [];
         var pet = [];
         var problem = [];
         var description = [];
@@ -285,6 +290,7 @@ $(document).ready(function() {
                 from_date[index] = format_date(new Date(Date.parse(event.target.getAttribute('data-from-date'))));
                 to_date[index] = format_date(new Date(Date.parse(event.target.getAttribute('data-to-date'))));
                 client[index] = event.target.getAttribute('data-client');
+                telephone[index] = event.target.getAttribute('data-telephone');
                 pet[index] = event.target.getAttribute('data-pet');
                 problem[index] = event.target.getAttribute('data-problem');
                 description[index] = event.target.getAttribute('data-description');
@@ -297,6 +303,7 @@ $(document).ready(function() {
                 $('#id_from_date').val(from_date[index]);
                 $('#id_to_date').val(to_date[index]);
                 $('#id_client').val(client[index]);
+                $('#id_telephone').val(telephone[index]);
                 $('#id_pet').val(pet[index]);
                 $('#id_problem').val(problem[index]);
                 $('#id_description').val(description[index]);
@@ -353,11 +360,13 @@ $(document).ready(function() {
                 // Check if the doctor exists in the table
                 if (doctor.length !== 0) {
 
+                    console.log(data[i].client.telephone);
+
                     sticker_id = "sticker-" + data[i].id;
                     // Top gap indicates the start of the sticker
                     top_gap = (spacing_tr[1].offsetHeight) * (Math.ceil(time_diff / (1000 * 60 * 15)) + 1);
                     // Bottom gap indicates the end of the ticker
-                    bottom_gap = (spacing_tr[1].offsetHeight) * (Math.ceil(time_diff_end / (1000 * 60 * 15)));
+                    bottom_gap = (spacing_tr[1].offsetHeight) * (Math.ceil(time_diff_end / (1000 * 60 * 15) - 1));
                     top = doctor.position().top + top_gap + 2;
 
                     element_width = spacing_td[1].offsetWidth*0.95;
@@ -372,6 +381,7 @@ $(document).ready(function() {
                         data-problem={#data-problem}\
                         data-description={#data-description}\
                         data-client={#data-client}\
+                        data-telephone={#data-telephone}\
                         data-pet={#data-pet}\
                         data-appointment-to={#data-appointment-to}\
                         data-appointment-by={#data-appointment-by}\
@@ -396,6 +406,7 @@ $(document).ready(function() {
                         .replace('{#data-problem}', data[i].problem_id)
                         .replace('{#data-description}', '"' +  data[i].description + '"')
                         .replace('{#data-client}', '"' + data[i].client.first_name + ' ' + data[i].client.last_name + '"')
+                        .replace('{#data-telephone}', '"' + data[i].client.telephone + '"')
                         .replace('{#data-pet}', data[i].pet.name)
                         .replace('{#data-appointment-to}', data[i].appointment_to.id)
                         .replace('{#data-appointment-by}', data[i].appointment_by.id);

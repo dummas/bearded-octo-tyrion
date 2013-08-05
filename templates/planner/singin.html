@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>Brokenwing - Singin</title>
+        <title>Brokenwing - Prisijungti</title>
         <meta name="author" content="">
         <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="/static/css/bootstrap-responsive.min.css">
@@ -42,16 +42,16 @@
     <body>
         <div class="container">
             <form class="form-signin" method="POST">{% csrf_token %}
-                <h2 class="form-signin-heading">Please sign in</h2>
+                <h2 class="form-signin-heading">Prisijungimas</h2>
                 {% load bootstrap %}
                 {{ form|bootstrap }}
-                <button class="btn btn-large btn-primary" type="submit" />Singin</button>
+                <button class="btn btn-large btn-primary" type="submit" />Prisijungti</button>
             </form>
 
             <hr>
 
             <footer>
-                <p>&copy; NORK 2013</p>
+                <p>&copy; Maksim Norkin {% now "Y" %}</p>
             </footer>
         </div>
     </body>
